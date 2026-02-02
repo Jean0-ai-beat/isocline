@@ -10,9 +10,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   
   <style>
-    /* Branding & Layout */
     body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #121212; color: white; margin: 0; padding: 0; min-height: 100vh; }
     
+    /* Branding */
     header {
       width: 100%; background: #1f1f1f; padding: 20px 0; text-align: center;
       border-bottom: 3px solid #4CAF50; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
@@ -23,7 +23,7 @@
     #controls { margin: 25px 0; padding: 15px; background: #2a2a2a; border-radius: 12px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; border: 1px solid #444; }
     
     /* Pitch Visuals */
-    #pitch-container { padding: 10px; background: #121212; border-radius: 15px; }
+    #pitch-container { padding: 15px; background: #121212; border-radius: 15px; }
     #pitch {
       width: 360px; height: 500px; background-color: #2e7d32; border: 4px solid white;
       position: relative; border-radius: 12px; overflow: hidden;
@@ -43,7 +43,7 @@
     button { background: #4CAF50; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     button:hover { background: #45a049; transform: translateY(-2px); }
     .btn-reset { background: #444; }
-    .btn-reset:hover { background: #555; }
+    .btn-share { background: #0077b5; }
     
     footer { margin-top: auto; padding: 20px; color: #555; font-size: 12px; font-weight: bold; }
   </style>
@@ -61,12 +61,13 @@
     <option value="433">4-3-3 Formation</option>
     <option value="352">3-5-2 Formation</option>
   </select>
-  <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)" title="Change Kit Color">
+  <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)">
   <button onclick="downloadLineup()">Save as Image</button>
-  <button class="btn-reset" onclick="resetTeam()">Reset Team</button>
+  <button class="btn-share" onclick="shareApp()">Share App</button>
+  <button class="btn-reset" onclick="resetTeam()">Reset</button>
 </div>
 
-<div id="pitch-container">
+<div id="pitch-container" id="captureArea">
   <div id="pitch">
     <div class="player" id="p0" onclick="editName(0)">GK</div>
     <div class="player" id="p1" onclick="editName(1)">LB</div>
@@ -85,7 +86,6 @@
 <footer>Powered by JP TECH © 2026</footer>
 
 <script>
-// Formation Coordinates
 const formations = {
   "442": [{t:440,l:158},{t:350,l:20},{t:370,l:110},{t:370,l:206},{t:350,l:295},{t:215,l:20},{t:235,l:110},{t:235,l:206},{t:215,l:295},{t:75,l:100},{t:75,l:215}],
   "433": [{t:440,l:158},{t:350,l:20},{t:370,l:110},{t:370,l:206},{t:350,l:295},{t:235,l:55},{t:255,l:158},{t:235,l:260},{t:75,l:35},{t:45,l:158},{t:75,l:280}],
@@ -96,7 +96,7 @@ function updateFormation(save = false) {
   const val = document.getElementById('formationSelect').value;
   formations[val].forEach((c, i) => {
     const p = document.getElementById('p' + i);
-    p.style.top = c.t + 'px'; p.style.left = c.l + 'px';
+    if(p) { p.style.top = c.t + 'px'; p.style.left = c.l + 'px'; }
   });
   if(save) localStorage.setItem('soccerFormation', val);
 }
@@ -121,7 +121,7 @@ function updateKitColor(save = false) {
 }
 
 function resetTeam() {
-  if(confirm("This will clear your lineup. Proceed?")) {
+  if(confirm("Clear current lineup and reset names?")) {
     localStorage.clear();
     location.reload();
   }
@@ -136,7 +136,22 @@ function downloadLineup() {
   });
 }
 
-// Initialization Logic
+async function shareApp() {
+  const shareData = {
+    title: 'Soclineup by JP Tech',
+    text: 'Check out my soccer lineup tool!',
+    url: window.location.href
+  };
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      alert('Link copied to clipboard!');
+    }
+  } catch (err) { console.log('Share failed', err); }
+}
+
 window.onload = () => {
   const savedFormation = localStorage.getItem('soccerFormation');
   if(savedFormation) document.getElementById('formationSelect').value = savedFormation;
@@ -147,7 +162,10 @@ window.onload = () => {
   }
   const savedNames = JSON.parse(localStorage.getItem('soccerNames'));
   if(savedNames) {
-    savedNames.forEach((name, i) => document.getElementById('p' + i).innerText = name);
+    savedNames.forEach((name, i) => {
+      const p = document.getElementById('p' + i);
+      if(p) p.innerText = name;
+    });
   }
   updateFormation();
 };
