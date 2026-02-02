@@ -3,26 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Soclineup | JPTech</title>
-  
+  <title>Soclineup | JP Tech</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
-  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   
   <style>
     body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #121212; color: white; margin: 0; padding: 0; min-height: 100vh; }
-    
-    /* Branding */
-    header {
-      width: 100%; background: #1f1f1f; padding: 20px 0; text-align: center;
-      border-bottom: 3px solid #4CAF50; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-    }
+    header { width: 100%; background: #1f1f1f; padding: 20px 0; text-align: center; border-bottom: 3px solid #4CAF50; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
     .app-name { font-size: 32px; font-weight: 900; color: #4CAF50; letter-spacing: 3px; margin: 0; text-transform: uppercase; }
     .tech-name { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 5px; margin-top: 5px; font-weight: 300; }
 
-    #controls { margin: 25px 0; padding: 15px; background: #2a2a2a; border-radius: 12px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; border: 1px solid #444; }
+    #controls { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 12px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; border: 1px solid #444; }
     
-    /* Pitch Visuals */
     #pitch-container { padding: 15px; background: #121212; border-radius: 15px; }
     #pitch {
       width: 360px; height: 500px; background-color: #2e7d32; border: 4px solid white;
@@ -32,19 +24,18 @@
     #pitch::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white; }
     #pitch::after { content: ''; position: absolute; top: 50%; left: 50%; width: 85px; height: 85px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
     
+    /* Jersey Styles */
     .player {
-      width: 44px; height: 44px; background-color: #d32f2f; color: white; border-radius: 50%;
-      position: absolute; display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: bold; cursor: pointer; border: 2px solid white;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      width: 55px; height: 55px; position: absolute;
+      display: flex; flex-direction: column; align-items: center;
+      cursor: pointer; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
     }
+    .jersey-svg { width: 45px; height: 45px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); }
+    .player-label { font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 3px; margin-top: -5px; max-width: 55px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    /* Buttons */
     button { background: #4CAF50; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
     button:hover { background: #45a049; transform: translateY(-2px); }
-    .btn-reset { background: #444; }
     .btn-share { background: #0077b5; }
-    
     footer { margin-top: auto; padding: 20px; color: #555; font-size: 12px; font-weight: bold; }
   </style>
 </head>
@@ -52,7 +43,7 @@
 
 <header>
   <h1 class="app-name">SOCLINEUP</h1>
-  <div class="tech-name">JPTECH</div>
+  <div class="tech-name">JP TECH</div>
 </header>
 
 <div id="controls">
@@ -61,42 +52,50 @@
     <option value="433">4-3-3 Formation</option>
     <option value="352">3-5-2 Formation</option>
   </select>
+  <label style="font-size: 12px;">Kit Color:</label>
   <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)">
-  <button onclick="downloadLineup()">Save Lineup</button>
-  <button class="btn-share" onclick="shareApp()">Share App</button>
-  <button class="btn-reset" onclick="resetTeam()">Reset</button>
+  <button onclick="downloadLineup()">Save PNG</button>
+  <button class="btn-share" onclick="shareApp()">Share</button>
 </div>
 
-<div id="pitch-container" id="captureArea">
-  <div id="pitch">
-    <div class="player" id="p0" onclick="editName(0)">GK</div>
-    <div class="player" id="p1" onclick="editName(1)">LB</div>
-    <div class="player" id="p2" onclick="editName(2)">CB</div>
-    <div class="player" id="p3" onclick="editName(3)">CB</div>
-    <div class="player" id="p4" onclick="editName(4)">RB</div>
-    <div class="player" id="p5" onclick="editName(5)">LM</div>
-    <div class="player" id="p6" onclick="editName(6)">CM</div>
-    <div class="player" id="p7" onclick="editName(7)">CM</div>
-    <div class="player" id="p8" onclick="editName(8)">RM</div>
-    <div class="player" id="p9" onclick="editName(9)">ST</div>
-    <div class="player" id="p10" onclick="editName(10)">ST</div>
-  </div>
+<div id="pitch-container">
+  <div id="pitch" id="captureArea">
+    </div>
 </div>
 
-<footer>Powered by JPTECH © 2026</footer>
+<footer>Powered by JP TECH © 2026</footer>
 
 <script>
 const formations = {
-  "442": [{t:440,l:158},{t:350,l:20},{t:370,l:110},{t:370,l:206},{t:350,l:295},{t:215,l:20},{t:235,l:110},{t:235,l:206},{t:215,l:295},{t:75,l:100},{t:75,l:215}],
-  "433": [{t:440,l:158},{t:350,l:20},{t:370,l:110},{t:370,l:206},{t:350,l:295},{t:235,l:55},{t:255,l:158},{t:235,l:260},{t:75,l:35},{t:45,l:158},{t:75,l:280}],
-  "352": [{t:440,l:158},{t:370,l:55},{t:390,l:158},{t:370,l:260},{t:235,l:10},{t:215,l:85},{t:215,l:158},{t:215,l:230},{t:235,l:305},{t:75,l:100},{t:75,l:215}]
+  "442": [{t:430,l:152},{t:350,l:15},{t:370,l:105},{t:370,l:200},{t:350,l:290},{t:210,l:15},{t:230,l:105},{t:230,l:200},{t:210,l:290},{t:70,l:95},{t:70,l:210}],
+  "433": [{t:430,l:152},{t:350,l:15},{t:370,l:105},{t:370,l:200},{t:350,l:290},{t:230,l:50},{t:250,l:152},{t:230,l:255},{t:70,l:30},{t:40,l:152},{t:70,l:275}],
+  "352": [{t:430,l:152},{t:365,l:50},{t:385,l:152},{t:365,l:255},{t:230,l:10},{t:210,l:80},{t:210,l:152},{t:210,l:225},{t:230,l:300},{t:70,l:95},{t:70,l:210}]
 };
+
+const defaultNames = ["GK", "LB", "CB", "CB", "RB", "LM", "CM", "CM", "RM", "ST", "ST"];
+
+// Create Players with Jersey SVGs
+const pitch = document.getElementById('pitch');
+for(let i=0; i<11; i++) {
+  const p = document.createElement('div');
+  p.className = 'player';
+  p.id = `p${i}`;
+  p.onclick = () => editName(i);
+  p.innerHTML = `
+    <svg class="jersey-svg" viewBox="0 0 100 100">
+      <path class="kit-main" d="M20,25 L35,10 L50,20 L65,10 L80,25 L80,45 L70,45 L70,90 L30,90 L30,45 L20,45 Z" fill="#d32f2f" stroke="white" stroke-width="2"/>
+      <path d="M40,15 Q50,25 60,15" fill="none" stroke="white" stroke-width="2"/>
+    </svg>
+    <div class="player-label" id="lbl${i}">${defaultNames[i]}</div>
+  `;
+  pitch.appendChild(p);
+}
 
 function updateFormation(save = false) {
   const val = document.getElementById('formationSelect').value;
   formations[val].forEach((c, i) => {
     const p = document.getElementById('p' + i);
-    if(p) { p.style.top = c.t + 'px'; p.style.left = c.l + 'px'; }
+    p.style.top = c.t + 'px'; p.style.left = c.l + 'px';
   });
   if(save) localStorage.setItem('soccerFormation', val);
 }
@@ -104,27 +103,28 @@ function updateFormation(save = false) {
 function editName(id) {
   const name = prompt("Enter Player Name:");
   if (name) {
-    document.getElementById('p' + id).innerText = name;
+    document.getElementById('lbl' + id).innerText = name;
     saveNames();
   }
 }
 
 function saveNames() {
-  const names = Array.from(document.querySelectorAll('.player')).map(p => p.innerText);
+  const names = Array.from(document.querySelectorAll('.player-label')).map(l => l.innerText);
   localStorage.setItem('soccerNames', JSON.stringify(names));
 }
 
 function updateKitColor(save = false) {
   const color = document.getElementById('kitColor').value;
-  document.querySelectorAll('.player').forEach(p => p.style.backgroundColor = color);
+  document.querySelectorAll('.kit-main').forEach(k => k.setAttribute('fill', color));
   if(save) localStorage.setItem('soccerKit', color);
 }
 
-function resetTeam() {
-  if(confirm("Clear current lineup and reset names?")) {
-    localStorage.clear();
-    location.reload();
-  }
+async function shareApp() {
+  const shareData = { title: 'Soclineup | JP Tech', url: window.location.href };
+  try {
+    if (navigator.share) await navigator.share(shareData);
+    else { await navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }
+  } catch (err) {}
 }
 
 function downloadLineup() {
@@ -136,37 +136,13 @@ function downloadLineup() {
   });
 }
 
-async function shareApp() {
-  const shareData = {
-    title: 'Soclineup by JPTech',
-    text: 'Check out my soccer lineup tool!',
-    url: window.location.href
-  };
-  try {
-    if (navigator.share) {
-      await navigator.share(shareData);
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      alert('Link copied to clipboard!');
-    }
-  } catch (err) { console.log('Share failed', err); }
-}
-
 window.onload = () => {
-  const savedFormation = localStorage.getItem('soccerFormation');
-  if(savedFormation) document.getElementById('formationSelect').value = savedFormation;
-  const savedKit = localStorage.getItem('soccerKit');
-  if(savedKit) {
-    document.getElementById('kitColor').value = savedKit;
-    updateKitColor();
-  }
-  const savedNames = JSON.parse(localStorage.getItem('soccerNames'));
-  if(savedNames) {
-    savedNames.forEach((name, i) => {
-      const p = document.getElementById('p' + i);
-      if(p) p.innerText = name;
-    });
-  }
+  const sForm = localStorage.getItem('soccerFormation');
+  if(sForm) document.getElementById('formationSelect').value = sForm;
+  const sKit = localStorage.getItem('soccerKit');
+  if(sKit) { document.getElementById('kitColor').value = sKit; updateKitColor(); }
+  const sNames = JSON.parse(localStorage.getItem('soccerNames'));
+  if(sNames) sNames.forEach((n, i) => document.getElementById('lbl' + i).innerText = n);
   updateFormation();
 };
 </script>
