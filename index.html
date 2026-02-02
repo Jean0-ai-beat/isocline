@@ -3,68 +3,62 @@
 <head>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-  body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #1a1a1a; color: white; padding: 20px; }
-  #controls { margin-bottom: 20px; padding: 15px; background: #333; border-radius: 8px; border: 1px solid #444; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  /* Header and Branding Styles */
+  header {
+    width: 100%;
+    background: #222;
+    padding: 15px 0;
+    text-align: center;
+    border-bottom: 2px solid #4CAF50;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  }
+  .app-name { font-size: 28px; font-weight: 800; color: #4CAF50; letter-spacing: 2px; margin: 0; }
+  .tech-name { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 4px; margin-top: 5px; }
+
+  body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #1a1a1a; color: white; margin: 0; padding: 0; }
+  #controls { margin-bottom: 20px; padding: 15px; background: #333; border-radius: 8px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
   
-  #pitch-container { padding: 20px; background: #1a1a1a; }
-  
+  #pitch-container { padding: 15px; background: #1a1a1a; }
   #pitch {
-    width: 380px; height: 520px;
-    background-color: #2e7d32;
-    border: 4px solid white;
-    position: relative;
-    border-radius: 12px;
+    width: 360px; height: 500px;
+    background-color: #2e7d32; border: 4px solid white;
+    position: relative; border-radius: 12px;
     background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px);
   }
-
-  /* Halfway Line & Circles */
-  #pitch::before {
-    content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white;
-  }
-  #pitch::after {
-    content: ''; position: absolute; top: 50%; left: 50%; width: 90px; height: 90px;
-    border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%);
-  }
-
+  #pitch::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white; }
+  #pitch::after { content: ''; position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
+  
   .player {
-    width: 44px; height: 44px;
-    background-color: #d32f2f; /* Default Red */
-    color: white;
-    border-radius: 50%; position: absolute;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px; font-weight: bold; text-align: center;
-    cursor: pointer; border: 2px solid white;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    width: 42px; height: 42px; background-color: #d32f2f; color: white; border-radius: 50%;
+    position: absolute; display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: bold; cursor: pointer; border: 2px solid white;
+    transition: all 0.4s ease; z-index: 10;
   }
-
-  button { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-  button:hover { background: #45a049; }
-  select, input { padding: 8px; border-radius: 5px; border: none; }
+  button { background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+  .btn-reset { background: #555; }
 </style>
 </head>
 <body>
 
-<div id="controls">
-  <div>
-    <label>Formation: </label>
-    <select id="formationSelect" onchange="changeFormation()">
-      <option value="442">4-4-2</option>
-      <option value="433">4-3-3</option>
-      <option value="352">3-5-2</option>
-    </select>
-  </div>
-  
-  <div>
-    <label>Kit: </label>
-    <input type="color" id="kitColor" value="#d32f2f" onchange="changeKitColor()">
-  </div>
+<header>
+  <h1 class="app-name">SOCLINEUP</h1>
+  <div class="tech-name">JP TECH</div>
+</header>
 
-  <button onclick="downloadLineup()">Download Image</button>
+<div id="controls">
+  <select id="formationSelect" onchange="updateFormation(true)">
+    <option value="442">4-4-2</option>
+    <option value="433">4-3-3</option>
+    <option value="352">3-5-2</option>
+  </select>
+  <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)">
+  <button onclick="downloadLineup()">Download PNG</button>
+  <button class="btn-reset" onclick="resetTeam()">Reset All</button>
 </div>
 
 <div id="pitch-container">
-  <div id="pitch" id="captureArea">
+  <div id="pitch">
     <div class="player" id="p0" onclick="editName(0)">GK</div>
     <div class="player" id="p1" onclick="editName(1)">LB</div>
     <div class="player" id="p2" onclick="editName(2)">CB</div>
@@ -80,44 +74,71 @@
 </div>
 
 <script>
+// Logic remains same as previous version to ensure Auto-Save and Formation changes work perfectly.
 const formations = {
-  "442": [{t:455,l:168},{t:360,l:20},{t:385,l:115},{t:385,l:220},{t:360,l:315},{t:230,l:20},{t:255,l:115},{t:255,l:220},{t:230,l:315},{t:85,l:110},{t:85,l:225}],
-  "433": [{t:455,l:168},{t:360,l:20},{t:385,l:115},{t:385,l:220},{t:360,l:315},{t:255,l:65},{t:285,l:168},{t:255,l:275},{t:85,l:45},{t:55,l:168},{t:85,l:295}],
-  "352": [{t:455,l:168},{t:385,l:65},{t:405,l:168},{t:385,l:275},{t:255,l:15},{t:235,l:95},{t:235,l:168},{t:235,l:245},{t:255,l:325},{t:85,l:110},{t:85,l:225}]
+  "442": [{t:445,l:158},{t:355,l:20},{t:375,l:110},{t:375,l:210},{t:355,l:300},{t:220,l:20},{t:240,l:110},{t:240,l:210},{t:220,l:300},{t:80,l:100},{t:80,l:220}],
+  "433": [{t:445,l:158},{t:355,l:20},{t:375,l:110},{t:375,l:210},{t:355,l:300},{t:240,l:60},{t:260,l:158},{t:240,l:260},{t:80,l:40},{t:50,l:158},{t:80,l:280}],
+  "352": [{t:445,l:158},{t:375,l:60},{t:395,l:158},{t:375,l:260},{t:240,l:15},{t:220,l:90},{t:220,l:158},{t:220,l:230},{t:240,l:305},{t:80,l:100},{t:80,l:220}]
 };
 
-function changeFormation() {
+function updateFormation(save = false) {
   const val = document.getElementById('formationSelect').value;
   formations[val].forEach((c, i) => {
     const p = document.getElementById('p' + i);
-    p.style.top = c.t + 'px';
-    p.style.left = c.l + 'px';
+    p.style.top = c.t + 'px'; p.style.left = c.l + 'px';
   });
+  if(save) localStorage.setItem('soccerFormation', val);
 }
 
 function editName(id) {
   const name = prompt("Player Name:");
-  if (name) document.getElementById('p' + id).innerText = name;
+  if (name) {
+    document.getElementById('p' + id).innerText = name;
+    saveNames();
+  }
 }
 
-function changeKitColor() {
+function saveNames() {
+  const names = Array.from(document.querySelectorAll('.player')).map(p => p.innerText);
+  localStorage.setItem('soccerNames', JSON.stringify(names));
+}
+
+function updateKitColor(save = false) {
   const color = document.getElementById('kitColor').value;
-  document.querySelectorAll('.player').forEach(p => {
-    p.style.backgroundColor = color;
-  });
+  document.querySelectorAll('.player').forEach(p => p.style.backgroundColor = color);
+  if(save) localStorage.setItem('soccerKit', color);
+}
+
+function resetTeam() {
+  if(confirm("Clear all names and reset?")) {
+    localStorage.clear();
+    location.reload();
+  }
 }
 
 function downloadLineup() {
   html2canvas(document.querySelector("#pitch-container")).then(canvas => {
     const link = document.createElement('a');
-    link.download = 'team-lineup.png';
+    link.download = 'soclineup-export.png';
     link.href = canvas.toDataURL();
     link.click();
   });
 }
 
-// Start in 4-4-2
-changeFormation();
+window.onload = () => {
+  const savedFormation = localStorage.getItem('soccerFormation');
+  if(savedFormation) document.getElementById('formationSelect').value = savedFormation;
+  const savedKit = localStorage.getItem('soccerKit');
+  if(savedKit) {
+    document.getElementById('kitColor').value = savedKit;
+    updateKitColor();
+  }
+  const savedNames = JSON.parse(localStorage.getItem('soccerNames'));
+  if(savedNames) {
+    savedNames.forEach((name, i) => document.getElementById('p' + i).innerText = name);
+  }
+  updateFormation();
+};
 </script>
 </body>
 </html>
