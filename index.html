@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Soclineup | JP Tech</title>
+  <title>Soclineup | JPTech</title>
   
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
   
@@ -52,7 +52,7 @@
 
 <header>
   <h1 class="app-name">SOCLINEUP</h1>
-  <div class="tech-name">JP TECH</div>
+  <div class="tech-name">JPTECH</div>
 </header>
 
 <div id="controls">
@@ -62,7 +62,7 @@
     <option value="352">3-5-2 Formation</option>
   </select>
   <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)">
-  <button onclick="downloadLineup()">Save as Image</button>
+  <button onclick="downloadLineup()">Save Lineup</button>
   <button class="btn-share" onclick="shareApp()">Share App</button>
   <button class="btn-reset" onclick="resetTeam()">Reset</button>
 </div>
@@ -83,7 +83,7 @@
   </div>
 </div>
 
-<footer>Powered by JP TECH © 2026</footer>
+<footer>Powered by JPTECH © 2026</footer>
 
 <script>
 const formations = {
@@ -138,7 +138,7 @@ function downloadLineup() {
 
 async function shareApp() {
   const shareData = {
-    title: 'Soclineup by JP Tech',
+    title: 'Soclineup by JPTech',
     text: 'Check out my soccer lineup tool!',
     url: window.location.href
   };
