@@ -1,60 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<style>
-  /* Header and Branding Styles */
-  header {
-    width: 100%;
-    background: #222;
-    padding: 15px 0;
-    text-align: center;
-    border-bottom: 2px solid #4CAF50;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-  }
-  .app-name { font-size: 28px; font-weight: 800; color: #4CAF50; letter-spacing: 2px; margin: 0; }
-  .tech-name { font-size: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 4px; margin-top: 5px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soclineup | JP Tech</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <style>
+    /* Branding & Layout */
+    body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #121212; color: white; margin: 0; padding: 0; min-height: 100vh; }
+    
+    header {
+      width: 100%; background: #1f1f1f; padding: 20px 0; text-align: center;
+      border-bottom: 3px solid #4CAF50; box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+    .app-name { font-size: 32px; font-weight: 900; color: #4CAF50; letter-spacing: 3px; margin: 0; text-transform: uppercase; }
+    .tech-name { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 5px; margin-top: 5px; font-weight: 300; }
 
-  body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #1a1a1a; color: white; margin: 0; padding: 0; }
-  #controls { margin-bottom: 20px; padding: 15px; background: #333; border-radius: 8px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
-  
-  #pitch-container { padding: 15px; background: #1a1a1a; }
-  #pitch {
-    width: 360px; height: 500px;
-    background-color: #2e7d32; border: 4px solid white;
-    position: relative; border-radius: 12px;
-    background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px);
-  }
-  #pitch::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white; }
-  #pitch::after { content: ''; position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
-  
-  .player {
-    width: 42px; height: 42px; background-color: #d32f2f; color: white; border-radius: 50%;
-    position: absolute; display: flex; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: bold; cursor: pointer; border: 2px solid white;
-    transition: all 0.4s ease; z-index: 10;
-  }
-  button { background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-  .btn-reset { background: #555; }
-</style>
+    #controls { margin: 25px 0; padding: 15px; background: #2a2a2a; border-radius: 12px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; border: 1px solid #444; }
+    
+    /* Pitch Visuals */
+    #pitch-container { padding: 10px; background: #121212; border-radius: 15px; }
+    #pitch {
+      width: 360px; height: 500px; background-color: #2e7d32; border: 4px solid white;
+      position: relative; border-radius: 12px; overflow: hidden;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 80px);
+    }
+    #pitch::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white; }
+    #pitch::after { content: ''; position: absolute; top: 50%; left: 50%; width: 85px; height: 85px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
+    
+    .player {
+      width: 44px; height: 44px; background-color: #d32f2f; color: white; border-radius: 50%;
+      position: absolute; display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: bold; cursor: pointer; border: 2px solid white;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+    }
+
+    /* Buttons */
+    button { background: #4CAF50; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+    button:hover { background: #45a049; transform: translateY(-2px); }
+    .btn-reset { background: #444; }
+    .btn-reset:hover { background: #555; }
+    
+    footer { margin-top: auto; padding: 20px; color: #555; font-size: 12px; font-weight: bold; }
+  </style>
 </head>
 <body>
 
 <header>
   <h1 class="app-name">SOCLINEUP</h1>
-  <div class="tech-name">JPTECH</div>
+  <div class="tech-name">JP TECH</div>
 </header>
 
 <div id="controls">
   <select id="formationSelect" onchange="updateFormation(true)">
-    <option value="442">4-4-2</option>
-    <option value="433">4-3-3</option>
-    <option value="352">3-5-2</option>
+    <option value="442">4-4-2 Formation</option>
+    <option value="433">4-3-3 Formation</option>
+    <option value="352">3-5-2 Formation</option>
   </select>
-  <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)">
-  <button onclick="downloadLineup()">Download PNG</button>
-  <button class="btn-reset" onclick="resetTeam()">Reset All</button>
+  <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)" title="Change Kit Color">
+  <button onclick="downloadLineup()">Save as Image</button>
+  <button class="btn-reset" onclick="resetTeam()">Reset Team</button>
 </div>
 
 <div id="pitch-container">
@@ -73,12 +82,14 @@
   </div>
 </div>
 
+<footer>Powered by JP TECH © 2026</footer>
+
 <script>
-// Logic remains same as previous version to ensure Auto-Save and Formation changes work perfectly.
+// Formation Coordinates
 const formations = {
-  "442": [{t:445,l:158},{t:355,l:20},{t:375,l:110},{t:375,l:210},{t:355,l:300},{t:220,l:20},{t:240,l:110},{t:240,l:210},{t:220,l:300},{t:80,l:100},{t:80,l:220}],
-  "433": [{t:445,l:158},{t:355,l:20},{t:375,l:110},{t:375,l:210},{t:355,l:300},{t:240,l:60},{t:260,l:158},{t:240,l:260},{t:80,l:40},{t:50,l:158},{t:80,l:280}],
-  "352": [{t:445,l:158},{t:375,l:60},{t:395,l:158},{t:375,l:260},{t:240,l:15},{t:220,l:90},{t:220,l:158},{t:220,l:230},{t:240,l:305},{t:80,l:100},{t:80,l:220}]
+  "442": [{t:440,l:158},{t:350,l:20},{t:370,l:110},{t:370,l:206},{t:350,l:295},{t:215,l:20},{t:235,l:110},{t:235,l:206},{t:215,l:295},{t:75,l:100},{t:75,l:215}],
+  "433": [{t:440,l:158},{t:350,l:20},{t:370,l:110},{t:370,l:206},{t:350,l:295},{t:235,l:55},{t:255,l:158},{t:235,l:260},{t:75,l:35},{t:45,l:158},{t:75,l:280}],
+  "352": [{t:440,l:158},{t:370,l:55},{t:390,l:158},{t:370,l:260},{t:235,l:10},{t:215,l:85},{t:215,l:158},{t:215,l:230},{t:235,l:305},{t:75,l:100},{t:75,l:215}]
 };
 
 function updateFormation(save = false) {
@@ -91,7 +102,7 @@ function updateFormation(save = false) {
 }
 
 function editName(id) {
-  const name = prompt("Player Name:");
+  const name = prompt("Enter Player Name:");
   if (name) {
     document.getElementById('p' + id).innerText = name;
     saveNames();
@@ -110,7 +121,7 @@ function updateKitColor(save = false) {
 }
 
 function resetTeam() {
-  if(confirm("Clear all names and reset?")) {
+  if(confirm("This will clear your lineup. Proceed?")) {
     localStorage.clear();
     location.reload();
   }
@@ -119,12 +130,13 @@ function resetTeam() {
 function downloadLineup() {
   html2canvas(document.querySelector("#pitch-container")).then(canvas => {
     const link = document.createElement('a');
-    link.download = 'soclineup-export.png';
+    link.download = 'Soclineup_JPTech.png';
     link.href = canvas.toDataURL();
     link.click();
   });
 }
 
+// Initialization Logic
 window.onload = () => {
   const savedFormation = localStorage.getItem('soccerFormation');
   if(savedFormation) document.getElementById('formationSelect').value = savedFormation;
