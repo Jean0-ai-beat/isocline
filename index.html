@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #1a1a1a; color: white; padding: 20px; }
+  #controls { margin-bottom: 20px; padding: 15px; background: #333; border-radius: 8px; border: 1px solid #444; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  
+  #pitch-container { padding: 20px; background: #1a1a1a; }
+  
+  #pitch {
+    width: 380px; height: 520px;
+    background-color: #2e7d32;
+    border: 4px solid white;
+    position: relative;
+    border-radius: 12px;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px);
+  }
+
+  /* Halfway Line & Circles */
+  #pitch::before {
+    content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white;
+  }
+  #pitch::after {
+    content: ''; position: absolute; top: 50%; left: 50%; width: 90px; height: 90px;
+    border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%);
+  }
+
+  .player {
+    width: 44px; height: 44px;
+    background-color: #d32f2f; /* Default Red */
+    color: white;
+    border-radius: 50%; position: absolute;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: bold; text-align: center;
+    cursor: pointer; border: 2px solid white;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+
+  button { background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+  button:hover { background: #45a049; }
+  select, input { padding: 8px; border-radius: 5px; border: none; }
+</style>
+</head>
+<body>
+
+<div id="controls">
+  <div>
+    <label>Formation: </label>
+    <select id="formationSelect" onchange="changeFormation()">
+      <option value="442">4-4-2</option>
+      <option value="433">4-3-3</option>
+      <option value="352">3-5-2</option>
+    </select>
+  </div>
+  
+  <div>
+    <label>Kit: </label>
+    <input type="color" id="kitColor" value="#d32f2f" onchange="changeKitColor()">
+  </div>
+
+  <button onclick="downloadLineup()">Download Image</button>
+</div>
+
+<div id="pitch-container">
+  <div id="pitch" id="captureArea">
+    <div class="player" id="p0" onclick="editName(0)">GK</div>
+    <div class="player" id="p1" onclick="editName(1)">LB</div>
+    <div class="player" id="p2" onclick="editName(2)">CB</div>
+    <div class="player" id="p3" onclick="editName(3)">CB</div>
+    <div class="player" id="p4" onclick="editName(4)">RB</div>
+    <div class="player" id="p5" onclick="editName(5)">LM</div>
+    <div class="player" id="p6" onclick="editName(6)">CM</div>
+    <div class="player" id="p7" onclick="editName(7)">CM</div>
+    <div class="player" id="p8" onclick="editName(8)">RM</div>
+    <div class="player" id="p9" onclick="editName(9)">ST</div>
+    <div class="player" id="p10" onclick="editName(10)">ST</div>
+  </div>
+</div>
+
+<script>
+const formations = {
+  "442": [{t:455,l:168},{t:360,l:20},{t:385,l:115},{t:385,l:220},{t:360,l:315},{t:230,l:20},{t:255,l:115},{t:255,l:220},{t:230,l:315},{t:85,l:110},{t:85,l:225}],
+  "433": [{t:455,l:168},{t:360,l:20},{t:385,l:115},{t:385,l:220},{t:360,l:315},{t:255,l:65},{t:285,l:168},{t:255,l:275},{t:85,l:45},{t:55,l:168},{t:85,l:295}],
+  "352": [{t:455,l:168},{t:385,l:65},{t:405,l:168},{t:385,l:275},{t:255,l:15},{t:235,l:95},{t:235,l:168},{t:235,l:245},{t:255,l:325},{t:85,l:110},{t:85,l:225}]
+};
+
+function changeFormation() {
+  const val = document.getElementById('formationSelect').value;
+  formations[val].forEach((c, i) => {
+    const p = document.getElementById('p' + i);
+    p.style.top = c.t + 'px';
+    p.style.left = c.l + 'px';
+  });
+}
+
+function editName(id) {
+  const name = prompt("Player Name:");
+  if (name) document.getElementById('p' + id).innerText = name;
+}
+
+function changeKitColor() {
+  const color = document.getElementById('kitColor').value;
+  document.querySelectorAll('.player').forEach(p => {
+    p.style.backgroundColor = color;
+  });
+}
+
+function downloadLineup() {
+  html2canvas(document.querySelector("#pitch-container")).then(canvas => {
+    const link = document.createElement('a');
+    link.download = 'team-lineup.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+
+// Start in 4-4-2
+changeFormation();
+</script>
+</body>
+</html>
