@@ -8,142 +8,124 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   
   <style>
-    body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: #121212; color: white; margin: 0; padding: 0; min-height: 100vh; }
-    header { width: 100%; background: #1f1f1f; padding: 20px 0; text-align: center; border-bottom: 3px solid #4CAF50; box-shadow: 0 4px 15px rgba(0,0,0,0.6); }
-    .app-name { font-size: 32px; font-weight: 900; color: #4CAF50; letter-spacing: 3px; margin: 0; text-transform: uppercase; }
-    .tech-name { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 5px; margin-top: 5px; font-weight: 300; }
+    :root { --bg: #121212; --header: #1f1f1f; --pitch: #2e7d32; --text: #ffffff; --card: #2a2a2a; }
+    .light-mode { --bg: #f0f0f0; --header: #ffffff; --pitch: #4caf50; --text: #333; --card: #fff; }
 
-    #controls { margin: 20px 0; padding: 15px; background: #2a2a2a; border-radius: 12px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; border: 1px solid #444; }
-    
-    #pitch-container { padding: 15px; background: #121212; border-radius: 15px; }
-    #pitch {
-      width: 360px; height: 500px; background-color: #2e7d32; border: 4px solid white;
-      position: relative; border-radius: 12px; overflow: hidden;
-      background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.03) 40px, rgba(255,255,255,0.03) 80px);
-    }
+    body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; transition: 0.3s; padding-bottom: 40px; }
+    header { width: 100%; background: var(--header); padding: 15px 0; text-align: center; border-bottom: 3px solid #4CAF50; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .app-name { font-size: 28px; font-weight: 900; color: #4CAF50; letter-spacing: 2px; margin: 0; }
+
+    #controls { margin: 15px 0; padding: 12px; background: var(--card); border-radius: 12px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; border: 1px solid #ddd; width: 90%; max-width: 440px; }
+    .control-group { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    label { font-size: 9px; font-weight: bold; color: #888; text-transform: uppercase; }
+
+    #capture-area { background: var(--bg); padding: 10px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; }
+    #pitch { width: 350px; height: 480px; background-color: var(--pitch); border: 4px solid white; position: relative; border-radius: 12px; overflow: hidden; background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px); }
     #pitch::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white; }
-    #pitch::after { content: ''; position: absolute; top: 50%; left: 50%; width: 85px; height: 85px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
+    #pitch::after { content: ''; position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
     
-    /* Jersey Styles */
-    .player {
-      width: 55px; height: 55px; position: absolute;
-      display: flex; flex-direction: column; align-items: center;
-      cursor: pointer; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
-    }
-    .jersey-svg { width: 45px; height: 45px; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4)); }
-    .player-label { font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 3px; margin-top: -5px; max-width: 55px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #bench-area { width: 350px; margin-top: 20px; padding: 15px 0; background: rgba(0,0,0,0.05); border-radius: 10px; border: 1px dashed #888; display: flex; justify-content: space-around; position: relative; }
+    #bench-area::before { content: 'SUBSTITUTES'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 10px; font-size: 10px; color: #4CAF50; font-weight: bold; }
 
-    button { background: #4CAF50; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-    button:hover { background: #45a049; transform: translateY(-2px); }
-    .btn-share { background: #0077b5; }
-    footer { margin-top: auto; padding: 20px; color: #555; font-size: 12px; font-weight: bold; }
+    #notes-box { width: 330px; margin-top: 15px; padding: 10px; background: var(--header); border: 1px solid #ddd; border-radius: 8px; color: var(--text); font-size: 12px; resize: none; outline: none; }
+
+    .player { width: 55px; height: 55px; position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.5s; z-index: 10; }
+    .bench-player { position: relative !important; top: 0 !important; left: 0 !important; }
+    .jersey-svg { width: 45px; height: 45px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+    .player-label { font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 1px 5px; border-radius: 3px; margin-top: -4px; color: white; width: 50px; text-align: center; }
+    .jersey-number { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: 900; color: white; text-shadow: 1px 1px 2px #000; }
+    .captain-badge { display: none; position: absolute; top: 0; right: 5px; background: gold; color: black; border-radius: 50%; width: 14px; height: 14px; font-size: 9px; font-weight: 900; align-items: center; justify-content: center; border: 1px solid white; }
+    .is-captain .captain-badge { display: flex; }
+
+    button { background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; }
+    .btn-help { background: #ff9800; width: 30px; border-radius: 50%; height: 30px; font-size: 16px; }
+    
+    /* Modal/Help Box */
+    #help-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
+    .modal-content { background: var(--header); padding: 25px; border-radius: 15px; width: 85%; max-width: 350px; line-height: 1.6; }
+    .modal-content h3 { color: #4CAF50; margin-top: 0; }
+    .modal-content li { margin-bottom: 10px; font-size: 14px; }
+
+    footer { margin-top: 20px; color: #888; font-size: 10px; }
   </style>
 </head>
 <body>
 
+<div id="help-modal" onclick="this.style.display='none'">
+  <div class="modal-content">
+    <h3>User Guide</h3>
+    <ul>
+      <li><b>Tap Once:</b> Change player name and squad number.</li>
+      <li><b>Double Tap:</b> Assign/Remove the Captain's Badge (C).</li>
+      <li><b>GK Color:</b> Changes only the Goalkeeper jersey.</li>
+      <li><b>Save PNG:</b> Downloads the pitch, bench, and notes.</li>
+      <li><b>Themes:</b> Switch between Day and Night pitch styles.</li>
+    </ul>
+    <button style="width: 100%">Got it!</button>
+  </div>
+</div>
+
 <header>
   <h1 class="app-name">SOCLINEUP</h1>
-  <div class="tech-name">JP TECH</div>
+  <div style="font-size: 10px; letter-spacing: 3px; color: #888;">BY JP TECH</div>
 </header>
 
 <div id="controls">
-  <select id="formationSelect" onchange="updateFormation(true)">
-    <option value="442">4-4-2 Formation</option>
-    <option value="433">4-3-3 Formation</option>
-    <option value="352">3-5-2 Formation</option>
-  </select>
-  <label style="font-size: 12px;">Kit Color:</label>
-  <input type="color" id="kitColor" value="#d32f2f" onchange="updateKitColor(true)">
+  <div class="control-group"><label>Formation</label><select id="formationSelect" onchange="updateFormation(true)"><option value="442">4-4-2</option><option value="433">4-3-3</option><option value="352">3-5-2</option></select></div>
+  <div class="control-group"><label>Team</label><input type="color" id="kitColor" value="#d32f2f" onchange="updateColors(true)"></div>
+  <div class="control-group"><label>GK</label><input type="color" id="gkColor" value="#ffeb3b" onchange="updateColors(true)"></div>
+  <div class="control-group"><label>Help</label><button class="btn-help" onclick="document.getElementById('help-modal').style.display='flex'">?</button></div>
+  <button onclick="toggleTheme()">☀️/🌙</button>
   <button onclick="downloadLineup()">Save PNG</button>
-  <button class="btn-share" onclick="shareApp()">Share</button>
 </div>
 
-<div id="pitch-container">
-  <div id="pitch" id="captureArea">
-    </div>
+<div id="capture-area">
+  <div id="pitch"></div>
+  <div id="bench-area"></div>
+  <textarea id="notes-box" placeholder="Match notes, tactics or final score..." oninput="saveNotes()"></textarea>
 </div>
 
-<footer>Powered by JP TECH © 2026</footer>
+<footer>© 2026 JP TECH SOLUTIONS</footer>
 
 <script>
 const formations = {
-  "442": [{t:430,l:152},{t:350,l:15},{t:370,l:105},{t:370,l:200},{t:350,l:290},{t:210,l:15},{t:230,l:105},{t:230,l:200},{t:210,l:290},{t:70,l:95},{t:70,l:210}],
-  "433": [{t:430,l:152},{t:350,l:15},{t:370,l:105},{t:370,l:200},{t:350,l:290},{t:230,l:50},{t:250,l:152},{t:230,l:255},{t:70,l:30},{t:40,l:152},{t:70,l:275}],
-  "352": [{t:430,l:152},{t:365,l:50},{t:385,l:152},{t:365,l:255},{t:230,l:10},{t:210,l:80},{t:210,l:152},{t:210,l:225},{t:230,l:300},{t:70,l:95},{t:70,l:210}]
+  "442": [{t:415,l:150},{t:340,l:10},{t:360,l:100},{t:360,l:200},{t:340,l:290},{t:210,l:10},{t:230,l:100},{t:230,l:200},{t:210,l:290},{t:70,l:90},{t:70,l:210}],
+  "433": [{t:415,l:150},{t:340,l:10},{t:360,l:100},{t:360,l:200},{t:340,l:290},{t:230,l:45},{t:250,l:150},{t:230,l:255},{t:70,l:25},{t:40,l:150},{t:70,l:275}],
+  "352": [{t:415,l:150},{t:350,l:45},{t:370,l:150},{t:350,l:255},{t:230,l:5},{t:210,l:80},{t:210,l:150},{t:210,l:220},{t:230,l:295},{t:70,l:90},{t:70,l:210}]
 };
 
-const defaultNames = ["GK", "LB", "CB", "CB", "RB", "LM", "CM", "CM", "RM", "ST", "ST"];
-
-// Create Players with Jersey SVGs
 const pitch = document.getElementById('pitch');
-for(let i=0; i<11; i++) {
+const bench = document.getElementById('bench-area');
+
+for(let i=0; i<16; i++) {
   const p = document.createElement('div');
-  p.className = 'player';
+  p.className = i < 11 ? 'player' : 'player bench-player';
   p.id = `p${i}`;
-  p.onclick = () => editName(i);
-  p.innerHTML = `
-    <svg class="jersey-svg" viewBox="0 0 100 100">
-      <path class="kit-main" d="M20,25 L35,10 L50,20 L65,10 L80,25 L80,45 L70,45 L70,90 L30,90 L30,45 L20,45 Z" fill="#d32f2f" stroke="white" stroke-width="2"/>
-      <path d="M40,15 Q50,25 60,15" fill="none" stroke="white" stroke-width="2"/>
-    </svg>
-    <div class="player-label" id="lbl${i}">${defaultNames[i]}</div>
-  `;
-  pitch.appendChild(p);
+  p.onclick = (e) => { if(e.detail === 1) setTimeout(() => { if(e.detail === 1) editPlayer(i) }, 250); };
+  p.ondblclick = () => toggleCaptain(i);
+  p.innerHTML = `<div class="captain-badge">C</div><div class="jersey-number" id="num${i}">${i+1}</div><svg class="jersey-svg" viewBox="0 0 100 100"><path class="kit-svg-path ${i===0?'gk-kit':'outfield-kit'}" d="M20,25 L35,10 L50,20 L65,10 L80,25 L80,45 L70,45 L70,90 L30,90 L30,45 L20,45 Z" stroke="white" stroke-width="2"/></svg><div class="player-label" id="lbl${i}">${i<11?'Player '+(i+1):'SUB'}</div>`;
+  if(i < 11) pitch.appendChild(p); else bench.appendChild(p);
 }
 
-function updateFormation(save = false) {
-  const val = document.getElementById('formationSelect').value;
-  formations[val].forEach((c, i) => {
-    const p = document.getElementById('p' + i);
-    p.style.top = c.t + 'px'; p.style.left = c.l + 'px';
-  });
-  if(save) localStorage.setItem('soccerFormation', val);
-}
-
-function editName(id) {
-  const name = prompt("Enter Player Name:");
-  if (name) {
-    document.getElementById('lbl' + id).innerText = name;
-    saveNames();
-  }
-}
-
-function saveNames() {
-  const names = Array.from(document.querySelectorAll('.player-label')).map(l => l.innerText);
-  localStorage.setItem('soccerNames', JSON.stringify(names));
-}
-
-function updateKitColor(save = false) {
-  const color = document.getElementById('kitColor').value;
-  document.querySelectorAll('.kit-main').forEach(k => k.setAttribute('fill', color));
-  if(save) localStorage.setItem('soccerKit', color);
-}
-
-async function shareApp() {
-  const shareData = { title: 'Soclineup | JP Tech', url: window.location.href };
-  try {
-    if (navigator.share) await navigator.share(shareData);
-    else { await navigator.clipboard.writeText(window.location.href); alert('Link copied!'); }
-  } catch (err) {}
-}
-
-function downloadLineup() {
-  html2canvas(document.querySelector("#pitch-container")).then(canvas => {
-    const link = document.createElement('a');
-    link.download = 'Soclineup_JPTech.png';
-    link.href = canvas.toDataURL();
-    link.click();
-  });
-}
+function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('soccerTheme', document.body.classList.contains('light-mode')?'light':'dark'); }
+function saveNotes() { localStorage.setItem('soccerNotes', document.getElementById('notes-box').value); }
+function toggleCaptain(id) { document.querySelectorAll('.player').forEach(p => p.classList.remove('is-captain')); document.getElementById('p' + id).classList.add('is-captain'); localStorage.setItem('soccerCaptain', id); }
+function updateFormation(save = false) { const val = document.getElementById('formationSelect').value; formations[val].forEach((c, i) => { const p = document.getElementById('p' + i); p.style.top = c.t + 'px'; p.style.left = c.l + 'px'; }); if(save) localStorage.setItem('soccerFormation', val); }
+function updateColors(save = false) { const o = document.getElementById('kitColor').value; const g = document.getElementById('gkColor').value; document.querySelectorAll('.outfield-kit').forEach(k => k.setAttribute('fill', o)); document.querySelectorAll('.gk-kit').forEach(k => k.setAttribute('fill', g)); if(save) { localStorage.setItem('soccerKit', o); localStorage.setItem('soccerGKKit', g); } }
+function editPlayer(id) { const n = prompt("Name:", document.getElementById('lbl'+id).innerText); const nu = prompt("Number:", document.getElementById('num'+id).innerText); if(n) document.getElementById('lbl'+id).innerText = n; if(nu) document.getElementById('num'+id).innerText = nu; saveData(); }
+function saveData() { const names = Array.from(document.querySelectorAll('.player-label')).map(l => l.innerText); const nums = Array.from(document.querySelectorAll('.jersey-number')).map(n => n.innerText); localStorage.setItem('soccerNames', JSON.stringify(names)); localStorage.setItem('soccerNums', JSON.stringify(nums)); }
+function downloadLineup() { html2canvas(document.querySelector("#capture-area")).then(canvas => { const link = document.createElement('a'); link.download = 'Lineup_JPTech.png'; link.href = canvas.toDataURL(); link.click(); }); }
 
 window.onload = () => {
-  const sForm = localStorage.getItem('soccerFormation');
-  if(sForm) document.getElementById('formationSelect').value = sForm;
-  const sKit = localStorage.getItem('soccerKit');
-  if(sKit) { document.getElementById('kitColor').value = sKit; updateKitColor(); }
-  const sNames = JSON.parse(localStorage.getItem('soccerNames'));
-  if(sNames) sNames.forEach((n, i) => document.getElementById('lbl' + i).innerText = n);
-  updateFormation();
+  if(localStorage.getItem('soccerTheme') === 'light') document.body.classList.add('light-mode');
+  const sN = localStorage.getItem('soccerNotes'); if(sN) document.getElementById('notes-box').value = sN;
+  const sF = localStorage.getItem('soccerFormation'); if(sF) document.getElementById('formationSelect').value = sF;
+  const sK = localStorage.getItem('soccerKit'); if(sK) document.getElementById('kitColor').value = sK;
+  const sGK = localStorage.getItem('soccerGKKit'); if(sGK) document.getElementById('gkColor').value = sGK;
+  const sC = localStorage.getItem('soccerCaptain'); if(sC !== null && document.getElementById('p' + sC)) document.getElementById('p' + sC).classList.add('is-captain');
+  const sNames = JSON.parse(localStorage.getItem('soccerNames')); if(sNames) sNames.forEach((n, i) => { if(document.getElementById('lbl' + i)) document.getElementById('lbl' + i).innerText = n; });
+  const sNums = JSON.parse(localStorage.getItem('soccerNums')); if(sNums) sNums.forEach((n, i) => { if(document.getElementById('num' + i)) document.getElementById('num' + i).innerText = n; });
+  updateColors(); updateFormation();
 };
 </script>
 </body>
