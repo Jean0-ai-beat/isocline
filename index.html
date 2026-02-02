@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Soclineup | JP Tech</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   
   <style>
@@ -12,7 +11,7 @@
     .light-mode { --bg: #f0f0f0; --header: #ffffff; --pitch: #4caf50; --text: #333; --card: #fff; }
 
     body { font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; background: var(--bg); color: var(--text); margin: 0; min-height: 100vh; transition: 0.3s; padding-bottom: 40px; }
-    header { width: 100%; background: var(--header); padding: 15px 0; text-align: center; border-bottom: 3px solid #4CAF50; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    header { width: 100%; background: var(--header); padding: 15px 0; text-align: center; border-bottom: 3px solid #4CAF50; }
     .app-name { font-size: 28px; font-weight: 900; color: #4CAF50; letter-spacing: 2px; margin: 0; }
 
     #controls { margin: 15px 0; padding: 12px; background: var(--card); border-radius: 12px; display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; align-items: center; border: 1px solid #ddd; width: 90%; max-width: 440px; }
@@ -20,50 +19,40 @@
     label { font-size: 9px; font-weight: bold; color: #888; text-transform: uppercase; }
 
     #capture-area { background: var(--bg); padding: 10px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; }
-    #pitch { width: 350px; height: 480px; background-color: var(--pitch); border: 4px solid white; position: relative; border-radius: 12px; overflow: hidden; background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(255,255,255,0.05) 40px, rgba(255,255,255,0.05) 80px); }
-    #pitch::before { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: white; }
-    #pitch::after { content: ''; position: absolute; top: 50%; left: 50%; width: 80px; height: 80px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
+    #pitch { width: 350px; height: 480px; background-color: var(--pitch); border: 4px solid white; position: relative; border-radius: 12px; overflow: hidden; }
     
     #bench-area { width: 350px; margin-top: 20px; padding: 15px 0; background: rgba(0,0,0,0.05); border-radius: 10px; border: 1px dashed #888; display: flex; justify-content: space-around; position: relative; }
-    #bench-area::before { content: 'SUBSTITUTES'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg); padding: 0 10px; font-size: 10px; color: #4CAF50; font-weight: bold; }
-
     #notes-box { width: 330px; margin-top: 15px; padding: 10px; background: var(--header); border: 1px solid #ddd; border-radius: 8px; color: var(--text); font-size: 12px; resize: none; outline: none; }
 
-    .player { width: 55px; height: 55px; position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.5s; z-index: 10; }
+    .player { width: 60px; height: 65px; position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; z-index: 10; }
     .bench-player { position: relative !important; top: 0 !important; left: 0 !important; }
-    .jersey-svg { width: 45px; height: 45px; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
-    .player-label { font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.7); padding: 1px 5px; border-radius: 3px; margin-top: -4px; color: white; width: 50px; text-align: center; }
-    .jersey-number { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: 900; color: white; text-shadow: 1px 1px 2px #000; }
-    .captain-badge { display: none; position: absolute; top: 0; right: 5px; background: gold; color: black; border-radius: 50%; width: 14px; height: 14px; font-size: 9px; font-weight: 900; align-items: center; justify-content: center; border: 1px solid white; }
+    
+    /* FIX: Jersey Number Stacking */
+    .jersey-container { position: relative; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; }
+    .jersey-svg { width: 100%; height: 100%; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+    
+    .jersey-number { 
+      position: absolute; 
+      top: 55%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      font-size: 16px; 
+      font-weight: 900; 
+      color: white; 
+      z-index: 20; /* Ensures it sits above the SVG path */
+      pointer-events: none; 
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+    }
+
+    .player-label { font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 3px; margin-top: 2px; color: white; width: 55px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .captain-badge { display: none; position: absolute; top: -5px; right: 0px; background: gold; color: black; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; font-weight: 900; align-items: center; justify-content: center; border: 1px solid white; z-index: 30; }
     .is-captain .captain-badge { display: flex; }
 
     button { background: #4CAF50; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 11px; }
-    .btn-help { background: #ff9800; width: 30px; border-radius: 50%; height: 30px; font-size: 16px; }
-    
-    /* Modal/Help Box */
-    #help-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; }
-    .modal-content { background: var(--header); padding: 25px; border-radius: 15px; width: 85%; max-width: 350px; line-height: 1.6; }
-    .modal-content h3 { color: #4CAF50; margin-top: 0; }
-    .modal-content li { margin-bottom: 10px; font-size: 14px; }
-
     footer { margin-top: 20px; color: #888; font-size: 10px; }
   </style>
 </head>
 <body>
-
-<div id="help-modal" onclick="this.style.display='none'">
-  <div class="modal-content">
-    <h3>User Guide</h3>
-    <ul>
-      <li><b>Tap Once:</b> Change player name and squad number.</li>
-      <li><b>Double Tap:</b> Assign/Remove the Captain's Badge (C).</li>
-      <li><b>GK Color:</b> Changes only the Goalkeeper jersey.</li>
-      <li><b>Save PNG:</b> Downloads the pitch, bench, and notes.</li>
-      <li><b>Themes:</b> Switch between Day and Night pitch styles.</li>
-    </ul>
-    <button style="width: 100%">Got it!</button>
-  </div>
-</div>
 
 <header>
   <h1 class="app-name">SOCLINEUP</h1>
@@ -74,7 +63,6 @@
   <div class="control-group"><label>Formation</label><select id="formationSelect" onchange="updateFormation(true)"><option value="442">4-4-2</option><option value="433">4-3-3</option><option value="352">3-5-2</option></select></div>
   <div class="control-group"><label>Team</label><input type="color" id="kitColor" value="#d32f2f" onchange="updateColors(true)"></div>
   <div class="control-group"><label>GK</label><input type="color" id="gkColor" value="#ffeb3b" onchange="updateColors(true)"></div>
-  <div class="control-group"><label>Help</label><button class="btn-help" onclick="document.getElementById('help-modal').style.display='flex'">?</button></div>
   <button onclick="toggleTheme()">☀️/🌙</button>
   <button onclick="downloadLineup()">Save PNG</button>
 </div>
@@ -82,16 +70,16 @@
 <div id="capture-area">
   <div id="pitch"></div>
   <div id="bench-area"></div>
-  <textarea id="notes-box" placeholder="Match notes, tactics or final score..." oninput="saveNotes()"></textarea>
+  <textarea id="notes-box" placeholder="Match notes..." oninput="saveNotes()"></textarea>
 </div>
 
 <footer>© 2026 JP TECH SOLUTIONS</footer>
 
 <script>
 const formations = {
-  "442": [{t:415,l:150},{t:340,l:10},{t:360,l:100},{t:360,l:200},{t:340,l:290},{t:210,l:10},{t:230,l:100},{t:230,l:200},{t:210,l:290},{t:70,l:90},{t:70,l:210}],
-  "433": [{t:415,l:150},{t:340,l:10},{t:360,l:100},{t:360,l:200},{t:340,l:290},{t:230,l:45},{t:250,l:150},{t:230,l:255},{t:70,l:25},{t:40,l:150},{t:70,l:275}],
-  "352": [{t:415,l:150},{t:350,l:45},{t:370,l:150},{t:350,l:255},{t:230,l:5},{t:210,l:80},{t:210,l:150},{t:210,l:220},{t:230,l:295},{t:70,l:90},{t:70,l:210}]
+  "442": [{t:410,l:145},{t:330,l:5},{t:350,l:95},{t:350,l:195},{t:330,l:285},{t:200,l:5},{t:220,l:95},{t:220,l:195},{t:200,l:285},{t:60,l:85},{t:60,l:205}],
+  "433": [{t:410,l:145},{t:330,l:5},{t:350,l:95},{t:350,l:195},{t:330,l:285},{t:220,l:40},{t:240,l:145},{t:220,l:250},{t:60,l:20},{t:30,l:145},{t:60,l:270}],
+  "352": [{t:410,l:145},{t:340,l:40},{t:360,l:145},{t:340,l:250},{t:220,l:0},{t:200,l:75},{t:200,l:145},{t:200,l:215},{t:220,l:290},{t:60,l:85},{t:60,l:205}]
 };
 
 const pitch = document.getElementById('pitch');
@@ -103,7 +91,17 @@ for(let i=0; i<16; i++) {
   p.id = `p${i}`;
   p.onclick = (e) => { if(e.detail === 1) setTimeout(() => { if(e.detail === 1) editPlayer(i) }, 250); };
   p.ondblclick = () => toggleCaptain(i);
-  p.innerHTML = `<div class="captain-badge">C</div><div class="jersey-number" id="num${i}">${i+1}</div><svg class="jersey-svg" viewBox="0 0 100 100"><path class="kit-svg-path ${i===0?'gk-kit':'outfield-kit'}" d="M20,25 L35,10 L50,20 L65,10 L80,25 L80,45 L70,45 L70,90 L30,90 L30,45 L20,45 Z" stroke="white" stroke-width="2"/></svg><div class="player-label" id="lbl${i}">${i<11?'Player '+(i+1):'SUB'}</div>`;
+  
+  p.innerHTML = `
+    <div class="captain-badge">C</div>
+    <div class="jersey-container">
+      <div class="jersey-number" id="num${i}">${i+1}</div>
+      <svg class="jersey-svg" viewBox="0 0 100 100">
+        <path class="kit-svg-path ${i===0?'gk-kit':'outfield-kit'}" d="M20,25 L35,10 L50,20 L65,10 L80,25 L80,45 L70,45 L70,90 L30,90 L30,45 L20,45 Z" stroke="white" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="player-label" id="lbl${i}">${i<11?'Player '+(i+1):'SUB'}</div>
+  `;
   if(i < 11) pitch.appendChild(p); else bench.appendChild(p);
 }
 
@@ -112,9 +110,15 @@ function saveNotes() { localStorage.setItem('soccerNotes', document.getElementBy
 function toggleCaptain(id) { document.querySelectorAll('.player').forEach(p => p.classList.remove('is-captain')); document.getElementById('p' + id).classList.add('is-captain'); localStorage.setItem('soccerCaptain', id); }
 function updateFormation(save = false) { const val = document.getElementById('formationSelect').value; formations[val].forEach((c, i) => { const p = document.getElementById('p' + i); p.style.top = c.t + 'px'; p.style.left = c.l + 'px'; }); if(save) localStorage.setItem('soccerFormation', val); }
 function updateColors(save = false) { const o = document.getElementById('kitColor').value; const g = document.getElementById('gkColor').value; document.querySelectorAll('.outfield-kit').forEach(k => k.setAttribute('fill', o)); document.querySelectorAll('.gk-kit').forEach(k => k.setAttribute('fill', g)); if(save) { localStorage.setItem('soccerKit', o); localStorage.setItem('soccerGKKit', g); } }
-function editPlayer(id) { const n = prompt("Name:", document.getElementById('lbl'+id).innerText); const nu = prompt("Number:", document.getElementById('num'+id).innerText); if(n) document.getElementById('lbl'+id).innerText = n; if(nu) document.getElementById('num'+id).innerText = nu; saveData(); }
+function editPlayer(id) { 
+  const n = prompt("Name:", document.getElementById('lbl'+id).innerText); 
+  const nu = prompt("Number:", document.getElementById('num'+id).innerText); 
+  if(n !== null) document.getElementById('lbl'+id).innerText = n; 
+  if(nu !== null) document.getElementById('num'+id).innerText = nu; 
+  saveData(); 
+}
 function saveData() { const names = Array.from(document.querySelectorAll('.player-label')).map(l => l.innerText); const nums = Array.from(document.querySelectorAll('.jersey-number')).map(n => n.innerText); localStorage.setItem('soccerNames', JSON.stringify(names)); localStorage.setItem('soccerNums', JSON.stringify(nums)); }
-function downloadLineup() { html2canvas(document.querySelector("#capture-area")).then(canvas => { const link = document.createElement('a'); link.download = 'Lineup_JPTech.png'; link.href = canvas.toDataURL(); link.click(); }); }
+function downloadLineup() { html2canvas(document.querySelector("#capture-area")).then(canvas => { const link = document.createElement('a'); link.download = 'Lineup_Fixed.png'; link.href = canvas.toDataURL(); link.click(); }); }
 
 window.onload = () => {
   if(localStorage.getItem('soccerTheme') === 'light') document.body.classList.add('light-mode');
