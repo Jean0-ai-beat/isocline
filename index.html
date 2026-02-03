@@ -19,17 +19,40 @@
     label { font-size: 9px; font-weight: bold; color: #888; text-transform: uppercase; }
 
     #capture-area { background: var(--bg); padding: 10px; border-radius: 15px; display: flex; flex-direction: column; align-items: center; }
-    #pitch { width: 350px; height: 480px; background-color: var(--pitch); border: 4px solid white; position: relative; border-radius: 12px; overflow: hidden; }
     
-    #bench-area { width: 350px; margin-top: 20px; padding: 15px 0; background: rgba(0,0,0,0.05); border-radius: 10px; border: 1px dashed #888; display: flex; justify-content: space-around; position: relative; }
+    #pitch { 
+      width: 350px; 
+      height: 480px; 
+      background-image: url('https://r.jina.ai/i/012656914757424ca6913d0a92f03657'); 
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      border: 4px solid white; 
+      position: relative; 
+      border-radius: 12px; 
+      overflow: hidden; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      touch-action: none; /* Prevents scrolling while dragging on mobile */
+    }
+    
+    #bench-area { width: 350px; margin-top: 20px; padding: 15px 0; background: rgba(0,0,0,0.05); border-radius: 10px; border: 1px dashed #888; display: flex; justify-content: space-around; position: relative; min-height: 80px; }
     #notes-box { width: 330px; margin-top: 15px; padding: 10px; background: var(--header); border: 1px solid #ddd; border-radius: 8px; color: var(--text); font-size: 12px; resize: none; outline: none; }
 
-    .player { width: 60px; height: 65px; position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; z-index: 10; }
+    .player { 
+      width: 60px; 
+      height: 65px; 
+      position: absolute; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      cursor: grab; 
+      z-index: 10; 
+      user-select: none;
+    }
+    .player:active { cursor: grabbing; }
     .bench-player { position: relative !important; top: 0 !important; left: 0 !important; }
     
-    /* FIX: Jersey Number Stacking */
-    .jersey-container { position: relative; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; }
-    .jersey-svg { width: 100%; height: 100%; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.3)); }
+    .jersey-container { position: relative; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; pointer-events: none; }
+    .jersey-svg { width: 100%; height: 100%; filter: drop-shadow(0 3px 3px rgba(0,0,0,0.4)); }
     
     .jersey-number { 
       position: absolute; 
@@ -39,12 +62,11 @@
       font-size: 16px; 
       font-weight: 900; 
       color: white; 
-      z-index: 20; /* Ensures it sits above the SVG path */
-      pointer-events: none; 
+      z-index: 20; 
       text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
     }
 
-    .player-label { font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 3px; margin-top: 2px; color: white; width: 55px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .player-label { font-size: 9px; font-weight: bold; background: rgba(0,0,0,0.85); padding: 2px 5px; border-radius: 3px; margin-top: 2px; color: white; width: 55px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; pointer-events: none; }
     .captain-badge { display: none; position: absolute; top: -5px; right: 0px; background: gold; color: black; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; font-weight: 900; align-items: center; justify-content: center; border: 1px solid white; z-index: 30; }
     .is-captain .captain-badge { display: flex; }
 
@@ -60,7 +82,7 @@
 </header>
 
 <div id="controls">
-  <div class="control-group"><label>Formation</label><select id="formationSelect" onchange="updateFormation(true)"><option value="442">4-4-2</option><option value="433">4-3-3</option><option value="352">3-5-2</option></select></div>
+  <div class="control-group"><label>Formation</label><select id="formationSelect" onchange="updateFormation(true)"><option value="442">4-4-2</option><option value="433">4-3-3</option><option value="352">3-5-2</option><option value="custom">Custom</option></select></div>
   <div class="control-group"><label>Team</label><input type="color" id="kitColor" value="#d32f2f" onchange="updateColors(true)"></div>
   <div class="control-group"><label>GK</label><input type="color" id="gkColor" value="#ffeb3b" onchange="updateColors(true)"></div>
   <button onclick="toggleTheme()">☀️/🌙</button>
@@ -77,21 +99,32 @@
 
 <script>
 const formations = {
-  "442": [{t:410,l:145},{t:330,l:5},{t:350,l:95},{t:350,l:195},{t:330,l:285},{t:200,l:5},{t:220,l:95},{t:220,l:195},{t:200,l:285},{t:60,l:85},{t:60,l:205}],
-  "433": [{t:410,l:145},{t:330,l:5},{t:350,l:95},{t:350,l:195},{t:330,l:285},{t:220,l:40},{t:240,l:145},{t:220,l:250},{t:60,l:20},{t:30,l:145},{t:60,l:270}],
-  "352": [{t:410,l:145},{t:340,l:40},{t:360,l:145},{t:340,l:250},{t:220,l:0},{t:200,l:75},{t:200,l:145},{t:200,l:215},{t:220,l:290},{t:60,l:85},{t:60,l:205}]
+  "442": [{t:405,l:145},{t:335,l:10},{t:345,l:95},{t:345,l:195},{t:335,l:280},{t:210,l:10},{t:220,l:95},{t:220,l:195},{t:210,l:280},{t:70,l:85},{t:70,l:205}],
+  "433": [{t:405,l:145},{t:335,l:10},{t:345,l:95},{t:345,l:195},{t:335,l:280},{t:220,l:50},{t:235,l:145},{t:220,l:240},{t:70,l:20},{t:40,l:145},{t:70,l:270}],
+  "352": [{t:405,l:145},{t:345,l:45},{t:355,l:145},{t:345,l:245},{t:230,l:5},{t:210,l:75},{t:210,l:145},{t:210,l:215},{t:230,l:285},{t:70,l:85},{t:70,l:205}]
 };
 
 const pitch = document.getElementById('pitch');
 const bench = document.getElementById('bench-area');
 
+// Setup Players
 for(let i=0; i<16; i++) {
   const p = document.createElement('div');
   p.className = i < 11 ? 'player' : 'player bench-player';
   p.id = `p${i}`;
-  p.onclick = (e) => { if(e.detail === 1) setTimeout(() => { if(e.detail === 1) editPlayer(i) }, 250); };
-  p.ondblclick = () => toggleCaptain(i);
+  p.draggable = true;
   
+  // Click Handlers
+  let clickTimer;
+  p.onmousedown = (e) => {
+      if (e.detail === 1) {
+          clickTimer = setTimeout(() => editPlayer(i), 250);
+      } else if (e.detail === 2) {
+          clearTimeout(clickTimer);
+          toggleCaptain(i);
+      }
+  };
+
   p.innerHTML = `
     <div class="captain-badge">C</div>
     <div class="jersey-container">
@@ -103,13 +136,77 @@ for(let i=0; i<16; i++) {
     <div class="player-label" id="lbl${i}">${i<11?'Player '+(i+1):'SUB'}</div>
   `;
   if(i < 11) pitch.appendChild(p); else bench.appendChild(p);
+  
+  setupDrag(p);
+}
+
+function setupDrag(el) {
+    let isDragging = false;
+    let offset = { x: 0, y: 0 };
+
+    el.addEventListener('mousedown', (e) => {
+        if(el.classList.contains('bench-player')) return;
+        isDragging = true;
+        const rect = el.getBoundingClientRect();
+        offset.x = e.clientX - rect.left;
+        offset.y = e.clientY - rect.top;
+        el.style.zIndex = 1000;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const pitchRect = pitch.getBoundingClientRect();
+        let x = e.clientX - pitchRect.left - offset.x;
+        let y = e.clientY - pitchRect.top - offset.y;
+
+        // Boundary checks
+        x = Math.max(0, Math.min(x, pitchRect.width - 60));
+        y = Math.max(0, Math.min(y, pitchRect.height - 65));
+
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        document.getElementById('formationSelect').value = 'custom';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if(isDragging) {
+            isDragging = false;
+            el.style.zIndex = 10;
+            saveCustomPositions();
+        }
+    });
+}
+
+function saveCustomPositions() {
+    const positions = Array.from(document.querySelectorAll('.player')).map(p => ({
+        t: p.style.top,
+        l: p.style.left
+    }));
+    localStorage.setItem('soccerPositions', JSON.stringify(positions));
 }
 
 function toggleTheme() { document.body.classList.toggle('light-mode'); localStorage.setItem('soccerTheme', document.body.classList.contains('light-mode')?'light':'dark'); }
 function saveNotes() { localStorage.setItem('soccerNotes', document.getElementById('notes-box').value); }
 function toggleCaptain(id) { document.querySelectorAll('.player').forEach(p => p.classList.remove('is-captain')); document.getElementById('p' + id).classList.add('is-captain'); localStorage.setItem('soccerCaptain', id); }
-function updateFormation(save = false) { const val = document.getElementById('formationSelect').value; formations[val].forEach((c, i) => { const p = document.getElementById('p' + i); p.style.top = c.t + 'px'; p.style.left = c.l + 'px'; }); if(save) localStorage.setItem('soccerFormation', val); }
+
+function updateFormation(save = false) { 
+    const val = document.getElementById('formationSelect').value;
+    if(val === 'custom') return;
+    formations[val].forEach((c, i) => { 
+        const p = document.getElementById('p' + i); 
+        if(p) {
+            p.style.top = c.t + 'px'; 
+            p.style.left = c.l + 'px'; 
+        }
+    }); 
+    if(save) {
+        localStorage.setItem('soccerFormation', val);
+        saveCustomPositions();
+    }
+}
+
 function updateColors(save = false) { const o = document.getElementById('kitColor').value; const g = document.getElementById('gkColor').value; document.querySelectorAll('.outfield-kit').forEach(k => k.setAttribute('fill', o)); document.querySelectorAll('.gk-kit').forEach(k => k.setAttribute('fill', g)); if(save) { localStorage.setItem('soccerKit', o); localStorage.setItem('soccerGKKit', g); } }
+
 function editPlayer(id) { 
   const n = prompt("Name:", document.getElementById('lbl'+id).innerText); 
   const nu = prompt("Number:", document.getElementById('num'+id).innerText); 
@@ -117,8 +214,22 @@ function editPlayer(id) {
   if(nu !== null) document.getElementById('num'+id).innerText = nu; 
   saveData(); 
 }
-function saveData() { const names = Array.from(document.querySelectorAll('.player-label')).map(l => l.innerText); const nums = Array.from(document.querySelectorAll('.jersey-number')).map(n => n.innerText); localStorage.setItem('soccerNames', JSON.stringify(names)); localStorage.setItem('soccerNums', JSON.stringify(nums)); }
-function downloadLineup() { html2canvas(document.querySelector("#capture-area")).then(canvas => { const link = document.createElement('a'); link.download = 'Lineup_Fixed.png'; link.href = canvas.toDataURL(); link.click(); }); }
+
+function saveData() { 
+    const names = Array.from(document.querySelectorAll('.player-label')).map(l => l.innerText); 
+    const nums = Array.from(document.querySelectorAll('.jersey-number')).map(n => n.innerText); 
+    localStorage.setItem('soccerNames', JSON.stringify(names)); 
+    localStorage.setItem('soccerNums', JSON.stringify(nums)); 
+}
+
+function downloadLineup() { 
+  html2canvas(document.querySelector("#capture-area"), { useCORS: true }).then(canvas => { 
+    const link = document.createElement('a'); 
+    link.download = 'Tactics.png'; 
+    link.href = canvas.toDataURL(); 
+    link.click(); 
+  }); 
+}
 
 window.onload = () => {
   if(localStorage.getItem('soccerTheme') === 'light') document.body.classList.add('light-mode');
@@ -129,7 +240,17 @@ window.onload = () => {
   const sC = localStorage.getItem('soccerCaptain'); if(sC !== null && document.getElementById('p' + sC)) document.getElementById('p' + sC).classList.add('is-captain');
   const sNames = JSON.parse(localStorage.getItem('soccerNames')); if(sNames) sNames.forEach((n, i) => { if(document.getElementById('lbl' + i)) document.getElementById('lbl' + i).innerText = n; });
   const sNums = JSON.parse(localStorage.getItem('soccerNums')); if(sNums) sNums.forEach((n, i) => { if(document.getElementById('num' + i)) document.getElementById('num' + i).innerText = n; });
-  updateColors(); updateFormation();
+  
+  const sPos = JSON.parse(localStorage.getItem('soccerPositions'));
+  if(sPos && sF === 'custom') {
+      sPos.forEach((pos, i) => {
+          const p = document.getElementById('p' + i);
+          if(p && pos.t) { p.style.top = pos.t; p.style.left = pos.l; }
+      });
+  } else {
+      updateFormation();
+  }
+  updateColors();
 };
 </script>
 </body>
