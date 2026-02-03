@@ -3,181 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Soccer Lineup Pro</title>
+    <title>Pro Tactics Board</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         :root {
-            --pitch-green: #2e7d32;
-            --line-white: rgba(255, 255, 255, 0.7);
-            --ui-bg: #1e1e1e;
-            --accent: #007AFF;
+            --pitch-green: #285e2a;
+            --line-white: rgba(255, 255, 255, 0.9);
+            --ui-dark: #121212;
         }
 
         body {
-            font-family: -apple-system, system-ui, sans-serif;
+            font-family: -apple-system, sans-serif;
             margin: 0; background: #000; color: white;
             display: flex; flex-direction: column; height: 100vh; overflow: hidden;
         }
 
-        /* --- THE PITCH --- */
+        /* --- THE PROFESSIONAL PITCH (CONVENTIONAL MEASURES) --- */
+        #pitch-container {
+            flex-grow: 1; display: flex; align-items: center; justify-content: center;
+            background: #111; padding: 10px;
+        }
+
         #pitch {
             background-color: var(--pitch-green);
-            background-image: linear-gradient(rgba(255,255,255,0.05) 50%, transparent 50%);
-            background-size: 100% 10%;
-            width: 100%; height: 60vh; position: relative;
-            border: 3px solid var(--line-white); box-sizing: border-box;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 10%, rgba(0,0,0,0.05) 10%, rgba(0,0,0,0.05) 20%);
+            width: 100%; max-width: 500px; aspect-ratio: 68 / 105; /* Conventional Ratio */
+            position: relative; border: 2px solid var(--line-white);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         .line { position: absolute; border: 2px solid var(--line-white); box-sizing: border-box; pointer-events: none; }
+        
+        /* Markings */
         .halfway { top: 50%; width: 100%; height: 0; border-bottom: 2px solid var(--line-white); }
-        .center-circle { 
-            top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            width: 80px; height: 80px; border-radius: 50%; 
-        }
-        .penalty-box { left: 20%; width: 60%; height: 15%; }
+        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 18%; aspect-ratio: 1; border-radius: 50%; }
+        .center-dot { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 4px; height: 4px; background: var(--line-white); border-radius: 50%; }
+        
+        /* Penalty Areas (Standard 16.5m scale) */
+        .penalty-box { left: 20%; width: 60%; height: 16%; }
+        .goal-box { left: 35%; width: 30%; height: 5.5%; }
         .top { top: -2px; border-top: none; }
         .bottom { bottom: -2px; border-bottom: none; }
 
+        /* The Penalty Arc (The "D") */
+        .arc { left: 38%; width: 24%; height: 8%; border-radius: 50%; }
+        .arc-top { top: 10%; clip-path: inset(75% 0 0 0); }
+        .arc-bottom { bottom: 10%; clip-path: inset(0 0 75% 0); }
+
         /* --- PLAYERS --- */
         .player-jersey {
-            position: absolute; width: 65px; text-align: center;
+            position: absolute; width: 60px; text-align: center;
             touch-action: none; cursor: grab; z-index: 10;
         }
 
         .jersey-img {
-            width: 45px; height: 45px; background: #cc0000; border: 2px solid white;
-            border-radius: 5px; margin: 0 auto; display: flex;
+            width: 42px; height: 42px; background: #d32f2f; border: 2px solid #fff;
+            border-radius: 4px; margin: 0 auto; display: flex;
             align-items: center; justify-content: center; font-weight: bold;
             background-size: cover; background-position: center;
         }
 
         .player-name {
-            font-size: 11px; font-weight: bold; margin-top: 3px;
-            background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 10px;
+            font-size: 10px; font-weight: bold; margin-top: 2px;
+            background: rgba(0,0,0,0.8); padding: 1px 4px; border-radius: 4px;
         }
 
         /* --- CONTROLS --- */
         #controls {
-            flex-grow: 1; background: var(--ui-bg); padding: 15px;
-            overflow-y: auto; border-top: 2px solid #333;
+            background: var(--ui-dark); padding: 20px;
+            border-top: 1px solid #333; padding-bottom: calc(20px + env(safe-area-inset-bottom));
         }
 
-        .input-row { display: flex; gap: 8px; margin-bottom: 10px; }
-        input, button { padding: 10px; border-radius: 6px; border: none; font-size: 14px; }
-        input[type="text"] { flex-grow: 2; background: #333; color: white; }
-        input[type="number"] { width: 55px; background: #333; color: white; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 12px; }
+        input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #444; background: #222; color: #fff; }
         
-        button { background: var(--accent); color: white; font-weight: bold; flex-grow: 1; cursor: pointer; }
-        .btn-sec { background: #444; font-size: 12px; }
-        .btn-add { background: #28a745; }
-        .btn-reset { background: #d32f2f; }
-        .btn-cam { background: #ff9800; }
-
-        label { font-size: 12px; color: #aaa; display: block; margin-bottom: 5px; }
+        .btn { padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; flex: 1; }
+        .btn-add { background: #2e7d32; color: white; }
+        .btn-cam { background: #f57c00; color: white; }
+        .btn-reset { background: #c62828; color: white; }
     </style>
 </head>
 <body>
 
-    <div id="pitch">
-        <div class="line halfway"></div>
-        <div class="line center-circle"></div>
-        <div class="line penalty-box top"></div>
-        <div class="line penalty-box bottom"></div>
+    <div id="pitch-container">
+        <div id="pitch">
+            <div class="line halfway"></div>
+            <div class="line center-circle"></div>
+            <div class="line center-dot"></div>
+            
+            <div class="line penalty-box top"></div>
+            <div class="line goal-box top"></div>
+            <div class="line arc arc-top"></div>
+            
+            <div class="line penalty-box bottom"></div>
+            <div class="line goal-box bottom"></div>
+            <div class="line arc arc-bottom"></div>
+        </div>
     </div>
 
     <div id="controls">
         <div class="input-row">
             <input type="text" id="pName" placeholder="Player Name">
-            <input type="number" id="pNum" placeholder="No.">
-        </div>
-        <label>Optional: Upload Custom Jersey Image</label>
-        <div class="input-row">
-            <input type="file" id="pJersey" accept="image/*" style="width: 100%; color: #888;">
+            <input type="number" id="pNum" placeholder="No." style="max-width: 60px;">
         </div>
         <div class="input-row">
-            <button class="btn-add" onclick="addPlayer()">+ Add Player</button>
-            <button class="btn-cam" onclick="downloadLineup()">📸 Save Image</button>
+            <input type="file" id="pJersey" accept="image/*">
         </div>
         <div class="input-row">
-            <button class="btn-sec" onclick="applyFormation('442')">4-4-2</button>
-            <button class="btn-sec" onclick="applyFormation('433')">4-3-3</button>
-            <button class="btn-reset" onclick="clearPitch()">Reset</button>
+            <button class="btn btn-add" onclick="addPlayer()">Add Player</button>
+            <button class="btn btn-cam" onclick="downloadLineup()">Save Photo</button>
+            <button class="btn btn-reset" onclick="clearPitch()">Clear</button>
         </div>
     </div>
 
     <script>
         const pitch = document.getElementById('pitch');
 
-        // Formations Map (percentages)
-        const formations = {
-            "442": [
-                {y: 85, x: 50}, // GK
-                {y: 70, x: 15}, {y: 70, x: 40}, {y: 70, x: 60}, {y: 70, x: 85}, // DEF
-                {y: 45, x: 15}, {y: 45, x: 40}, {y: 45, x: 60}, {y: 45, x: 85}, // MID
-                {y: 20, x: 35}, {y: 20, x: 65} // FWD
-            ],
-            "433": [
-                {y: 85, x: 50}, // GK
-                {y: 70, x: 15}, {y: 70, x: 40}, {y: 70, x: 60}, {y: 70, x: 85}, // DEF
-                {y: 45, x: 25}, {y: 45, x: 50}, {y: 45, x: 75}, // MID
-                {y: 20, x: 15}, {y: 20, x: 50}, {y: 20, x: 85} // FWD
-            ]
-        };
-
         function addPlayer(savedData = null) {
-            const nameInput = document.getElementById('pName');
-            const numInput = document.getElementById('pNum');
-            const name = savedData ? savedData.name : nameInput.value;
-            const num = savedData ? savedData.num : numInput.value;
+            const name = savedData ? savedData.name : document.getElementById('pName').value;
+            const num = savedData ? savedData.num : document.getElementById('pNum').value;
+            const img = savedData ? savedData.img : "";
             
             if(!name) return;
 
-            const playerDiv = document.createElement('div');
-            playerDiv.className = 'player-jersey';
-            
-            // Set position
-            if (savedData) {
-                playerDiv.style.left = savedData.x;
-                playerDiv.style.top = savedData.y;
-            } else {
-                playerDiv.style.left = '40%';
-                playerDiv.style.top = '40%';
-            }
+            const player = document.createElement('div');
+            player.className = 'player-jersey';
+            player.style.left = savedData ? savedData.x : '42%';
+            player.style.top = savedData ? savedData.y : '45%';
 
-            // Handle Image
-            let jerseyImg = savedData ? savedData.img : "";
-            playerDiv.innerHTML = `<div class="jersey-img" style="background-image: url(${jerseyImg})">${num}</div><div class="player-name">${name}</div>`;
+            player.innerHTML = `<div class="jersey-img" style="background-image: url(${img})">${num}</div><div class="player-name">${name}</div>`;
             
+            // Handle new image upload
             if (!savedData) {
                 const file = document.getElementById('pJersey').files[0];
                 if(file) {
                     const reader = new FileReader();
                     reader.onload = (e) => {
-                        playerDiv.querySelector('.jersey-img').style.backgroundImage = `url(${e.target.result})`;
+                        player.querySelector('.jersey-img').style.backgroundImage = `url(${e.target.result})`;
                         saveData();
                     };
                     reader.readAsDataURL(file);
                 }
             }
 
-            makeDraggable(playerDiv);
-            pitch.appendChild(playerDiv);
-            
-            if(!savedData) {
-                nameInput.value = ''; numInput.value = '';
-                saveData();
-            }
+            makeDraggable(player);
+            pitch.appendChild(player);
+            saveData();
         }
 
         function makeDraggable(el) {
             let active = false;
             let currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
 
-            // Initialize offsets if player has current position
-            const rect = el.getBoundingClientRect();
-
-            const dragStart = (e) => {
+            // If loading from save, we need to calculate existing offsets
+            const startDrag = (e) => {
                 const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
                 const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
                 initialX = clientX - xOffset;
@@ -185,7 +165,7 @@
                 if (e.target.closest('.player-jersey')) active = true;
             };
 
-            const dragMove = (e) => {
+            const drag = (e) => {
                 if (active) {
                     e.preventDefault();
                     const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
@@ -197,62 +177,51 @@
                 }
             };
 
-            const dragEnd = () => { active = false; saveData(); };
+            const stopDrag = () => { active = false; saveData(); };
 
-            el.addEventListener('touchstart', dragStart);
-            el.addEventListener('touchmove', dragMove);
-            el.addEventListener('touchend', dragEnd);
-            el.addEventListener('mousedown', dragStart);
-            document.addEventListener('mousemove', dragMove);
-            document.addEventListener('mouseup', dragEnd);
-        }
-
-        function applyFormation(type) {
-            const players = document.querySelectorAll('.player-jersey');
-            const coords = formations[type];
-            players.forEach((p, i) => {
-                if(coords[i]) {
-                    p.style.transform = `translate3d(0,0,0)`; // Reset drag offsets
-                    p.style.top = coords[i].y + '%';
-                    p.style.left = coords[i].x + '%';
-                }
-            });
-            saveData();
-        }
-
-        function downloadLineup() {
-            const pitchEl = document.getElementById('pitch');
-            html2canvas(pitchEl, { useCORS: true, scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'my-lineup.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
+            el.addEventListener('touchstart', startDrag);
+            el.addEventListener('touchmove', drag);
+            el.addEventListener('touchend', stopDrag);
+            el.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', stopDrag);
         }
 
         function saveData() {
             const players = [];
             document.querySelectorAll('.player-jersey').forEach(p => {
+                // Get image data safely
+                const bg = p.querySelector('.jersey-img').style.backgroundImage;
+                const cleanImg = bg.slice(5, -2).replace(/"/g, "");
+                
                 players.push({
                     name: p.querySelector('.player-name').innerText,
                     num: p.querySelector('.jersey-img').innerText,
-                    x: p.style.left,
-                    y: p.style.top,
-                    img: p.querySelector('.jersey-img').style.backgroundImage.slice(5, -2).replace(/"/g, "")
+                    x: p.style.left, y: p.style.top,
+                    img: cleanImg.startsWith('data') ? cleanImg : ""
                 });
             });
-            localStorage.setItem('savedSoccerLineup', JSON.stringify(players));
+            localStorage.setItem('proSoccerSave', JSON.stringify(players));
+        }
+
+        function downloadLineup() {
+            html2canvas(pitch, { scale: 2, backgroundColor: '#285e2a' }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'lineup.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
         }
 
         function clearPitch() {
-            if(confirm("Reset the pitch and remove all players?")) {
-                localStorage.removeItem('savedSoccerLineup');
+            if(confirm("Erase team?")) {
+                localStorage.removeItem('proSoccerSave');
                 location.reload();
             }
         }
 
         window.onload = () => {
-            const saved = JSON.parse(localStorage.getItem('savedSoccerLineup'));
+            const saved = JSON.parse(localStorage.getItem('proSoccerSave'));
             if(saved) saved.forEach(p => addPlayer(p));
         };
     </script>
