@@ -113,4 +113,31 @@
     </nav>
 
 </body>
-</html>
+</html> 
+/* DARK MODE STYLES */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212; /* Deep black/grey background */
+        color: #ffffff;            /* White text */
+    }
+
+    header, nav {
+        background-color: #1e1e1e; /* Darker grey for bars */
+        border-color: #333;        /* Subtle borders */
+        color: #ffffff;
+    }
+
+    .card {
+        background-color: #1e1e1e; /* Dark cards */
+        color: #ffffff;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .nav-item {
+        color: #bbb; /* Dimmer icons for inactive states */
+    }
+
+    .nav-item.active {
+        color: #0A84FF; /* A slightly brighter blue for dark mode */
+    }
+}
