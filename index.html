@@ -3,242 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Soccer Lineup</title>
+    <title>Touch-to-Edit Soccer Lineup</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root {
-            --pitch-green: #2e7d32;
-            --line-white: rgba(255, 255, 255, 0.7);
-        }
-
-        body {
-            font-family: -apple-system, sans-serif;
-            margin: 0; background: #121212; color: white;
-            display: flex; flex-direction: column; height: 100vh; overflow: hidden;
-        }
+        :root { --pitch-green: #2e7d32; --line-white: rgba(255, 255, 255, 0.7); }
+        body { font-family: sans-serif; margin: 0; background: #000; color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
         /* --- THE PITCH --- */
         #pitch {
             background-color: var(--pitch-green);
             background-image: linear-gradient(rgba(255,255,255,0.05) 50%, transparent 50%);
             background-size: 100% 10%;
-            width: 100%; height: 75vh; position: relative;
-            border: 3px solid var(--line-white); box-sizing: border-box;
+            width: 100%; height: 75vh; position: relative; border: 3px solid var(--line-white);
         }
-
-        .line { position: absolute; border: 2px solid var(--line-white); box-sizing: border-box; pointer-events: none; }
-        .halfway { top: 50%; width: 100%; height: 0; border-bottom: 2px solid var(--line-white); }
+        .line { position: absolute; border: 2px solid var(--line-white); pointer-events: none; }
+        .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); }
         .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; }
-        .penalty-box { left: 15%; width: 70%; height: 15%; }
+        .penalty-box { left: 20%; width: 60%; height: 15%; }
         .top { top: -2px; border-top: none; }
         .bottom { bottom: -2px; border-bottom: none; }
 
         /* --- PLAYERS --- */
-        .player-jersey {
-            position: absolute; width: 60px; text-align: center;
-            touch-action: none; cursor: grab; z-index: 10;
+        .player {
+            position: absolute; width: 70px; text-align: center; touch-action: none; cursor: grab; z-index: 10;
         }
-
-        .jersey-icon {
-            width: 45px; height: 45px; background-color: #e0e0e0;
-            border: 2px solid white; border-radius: 5px; margin: 0 auto;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: bold; color: white; text-shadow: 1px 1px 2px black;
-            background-size: cover; background-position: center;
+        .jersey {
+            width: 50px; height: 50px; background-color: red; border: 2px solid white;
+            border-radius: 8px; margin: 0 auto; display: flex; align-items: center; 
+            justify-content: center; font-weight: bold; background-size: cover; background-position: center;
         }
+        .name-label { font-size: 11px; font-weight: bold; margin-top: 4px; background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 10px; }
 
-        .player-name {
-            font-size: 10px; font-weight: bold; margin-top: 3px;
-            background: rgba(0,0,0,0.6); padding: 2px 4px; border-radius: 4px;
-            white-space: nowrap; overflow: hidden;
-        }
-
-        /* --- MODAL / POPUP --- */
+        /* --- MODAL (Edit Popup) --- */
         #editModal {
-            display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); background: #222;
-            padding: 20px; border-radius: 15px; border: 2px solid #444;
-            z-index: 100; width: 80%; max-width: 300px;
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #222; padding: 20px; border-radius: 15px; border: 2px solid #444; z-index: 100; width: 80%;
         }
-
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 90;
-        }
-
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99; }
         input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; }
-        .modal-btns { display: flex; gap: 10px; }
-        button { flex: 1; padding: 10px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-save { background: #28a745; color: white; }
-        .btn-close { background: #555; color: white; }
-        .btn-cam { background: #ff9800; color: white; margin: 15px; height: 50px; }
+        .btn-row { display: flex; gap: 10px; }
+        button { flex: 1; padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+
+        #controls { padding: 15px; background: #111; display: flex; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="pitch">
-        <div class="line halfway"></div>
-        <div class="line center-circle"></div>
-        <div class="line penalty-box top"></div>
-        <div class="line penalty-box bottom"></div>
-        </div>
+<div id="pitch">
+    <div class="line halfway"></div>
+    <div class="line center-circle"></div>
+    <div class="line penalty-box top"></div>
+    <div class="line penalty-box bottom"></div>
+</div>
 
-    <button class="btn-cam" onclick="downloadLineup()">📸 Save Lineup Image</button>
+<div id="controls">
+    <button style="background: #ff9800;" onclick="downloadLineup()">📸 Save Image</button>
+    <button style="background: #444;" onclick="resetPositions()">📍 Reset Positions</button>
+</div>
 
-    <div class="modal-overlay" id="overlay"></div>
-    <div id="editModal">
-        <h3>Edit Player</h3>
-        <input type="text" id="editName" placeholder="Name">
-        <input type="number" id="editNum" placeholder="Jersey Number">
-        <label>Jersey Color:</label>
-        <input type="color" id="editColor" value="#cc0000">
-        <div class="modal-btns">
-            <button class="btn-save" onclick="savePlayerEdit()">Update</button>
-            <button class="btn-close" onclick="closeModal()">Cancel</button>
-        </div>
+<div class="modal-overlay" id="overlay"></div>
+<div id="editModal">
+    <h3>Edit Player</h3>
+    <input type="text" id="editName" placeholder="Name">
+    <input type="number" id="editNum" placeholder="Number">
+    <label>Jersey Color:</label>
+    <input type="color" id="editColor" value="#ff0000">
+    <label>Upload Personal Jersey:</label>
+    <input type="file" id="editImg" accept="image/*">
+    <div class="btn-row">
+        <button style="background:#28a745" onclick="saveChanges()">Apply</button>
+        <button style="background:#d32f2f" onclick="closeModal()">Cancel</button>
     </div>
+</div>
 
-    <script>
-        const pitch = document.getElementById('pitch');
-        const modal = document.getElementById('editModal');
-        const overlay = document.getElementById('overlay');
-        let activePlayer = null;
+<script>
+    let currentPlayer = null;
+    const defaultPositions = [
+        { y: 85, x: 42, role: 'GK', color: '#ffcc00' },
+        { y: 70, x: 10 }, { y: 70, x: 32 }, { y: 70, x: 53 }, { y: 70, x: 75 },
+        { y: 45, x: 20 }, { y: 45, x: 42 }, { y: 45, x: 65 },
+        { y: 20, x: 15 }, { y: 20, x: 42 }, { y: 20, x: 70 }
+    ];
 
-        // Default 4-4-2 starting positions
-        const startPos = [
-            {y: 85, x: 50, color: '#fbc02d', name: 'GK', num: '1'}, // Goalkeeper
-            {y: 70, x: 15, color: '#cc0000', name: 'LB', num: '3'},
-            {y: 70, x: 40, color: '#cc0000', name: 'CB', num: '4'},
-            {y: 70, x: 60, color: '#cc0000', name: 'CB', num: '5'},
-            {y: 70, x: 85, color: '#cc0000', name: 'RB', num: '2'},
-            {y: 45, x: 15, color: '#cc0000', name: 'LM', num: '11'},
-            {y: 45, x: 40, color: '#cc0000', name: 'CM', num: '8'},
-            {y: 45, x: 60, color: '#cc0000', name: 'CM', num: '6'},
-            {y: 45, x: 85, color: '#cc0000', name: 'RM', num: '7'},
-            {y: 20, x: 35, color: '#cc0000', name: 'ST', num: '9'},
-            {y: 20, x: 65, color: '#cc0000', name: 'ST', num: '10'}
-        ];
+    function initPitch() {
+        const savedData = JSON.parse(localStorage.getItem('soccerRoster'));
+        const dataToUse = savedData || defaultPositions;
 
-        function initApp() {
-            const saved = JSON.parse(localStorage.getItem('soccerLineup_V2'));
-            const dataToLoad = saved || startPos;
-            dataToLoad.forEach(data => createPlayer(data));
-        }
+        dataToUse.forEach((p, i) => {
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'player';
+            playerDiv.style.top = p.y + '%';
+            playerDiv.style.left = p.x + '%';
+            playerDiv.dataset.index = i;
 
-        function createPlayer(data) {
-            const p = document.createElement('div');
-            p.className = 'player-jersey';
-            p.style.top = data.y + '%';
-            p.style.left = data.x + '%';
-            
-            p.innerHTML = `
-                <div class="jersey-icon" style="background-color: ${data.color}">${data.num}</div>
-                <div class="player-name">${data.name}</div>
+            playerDiv.innerHTML = `
+                <div class="jersey" style="background-color: ${p.color || 'red'}; background-image: url(${p.img || ''})">${p.num || (i+1)}</div>
+                <div class="name-label">${p.name || 'Player'}</div>
             `;
 
-            // Tap to Edit
-            p.addEventListener('dblclick', () => openEdit(p)); // Desktop
-            p.addEventListener('click', (e) => {
-                if (e.detail === 2) openEdit(p); // Mobile double-tap simulation
-            });
-            // Long press or simple click for mobile
-            p.addEventListener('contextmenu', (e) => { e.preventDefault(); openEdit(p); });
+            // Click to edit
+            playerDiv.addEventListener('click', () => openModal(playerDiv));
+            
+            makeDraggable(playerDiv);
+            document.getElementById('pitch').appendChild(playerDiv);
+        });
+    }
 
-            makeDraggable(p);
-            pitch.appendChild(p);
-        }
+    function openModal(el) {
+        currentPlayer = el;
+        document.getElementById('editName').value = el.querySelector('.name-label').innerText;
+        document.getElementById('editNum').value = el.querySelector('.jersey').innerText;
+        document.getElementById('editModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
 
-        function openEdit(el) {
-            activePlayer = el;
-            document.getElementById('editName').value = el.querySelector('.player-name').innerText;
-            document.getElementById('editNum').value = el.querySelector('.jersey-icon').innerText;
-            document.getElementById('editColor').value = rgbToHex(el.querySelector('.jersey-icon').style.backgroundColor);
-            modal.style.display = 'block';
-            overlay.style.display = 'block';
-        }
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('editImg').value = '';
+    }
 
-        function savePlayerEdit() {
-            activePlayer.querySelector('.player-name').innerText = document.getElementById('editName').value;
-            activePlayer.querySelector('.jersey-icon').innerText = document.getElementById('editNum').value;
-            activePlayer.querySelector('.jersey-icon').style.backgroundColor = document.getElementById('editColor').value;
-            closeModal();
-            saveAllData();
-        }
+    function saveChanges() {
+        const name = document.getElementById('editName').value;
+        const num = document.getElementById('editNum').value;
+        const color = document.getElementById('editColor').value;
+        const file = document.getElementById('editImg').files[0];
 
-        function closeModal() {
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
-        }
+        currentPlayer.querySelector('.name-label').innerText = name;
+        currentPlayer.querySelector('.jersey').innerText = num;
+        currentPlayer.querySelector('.jersey').style.backgroundColor = color;
 
-        function makeDraggable(el) {
-            let active = false;
-            let currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
-            const dragStart = (e) => {
-                const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
-                initialX = clientX - xOffset;
-                initialY = clientY - yOffset;
-                if (e.target.closest('.player-jersey')) active = true;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentPlayer.querySelector('.jersey').style.backgroundImage = `url(${e.target.result})`;
+                saveToStorage();
             };
-
-            const dragMove = (e) => {
-                if (active) {
-                    e.preventDefault();
-                    const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
-                    currentX = clientX - initialX;
-                    currentY = clientY - initialY;
-                    xOffset = currentX; yOffset = currentY;
-                    el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-                }
-            };
-
-            const dragEnd = () => { active = false; saveAllData(); };
-
-            el.addEventListener('touchstart', dragStart);
-            el.addEventListener('touchmove', dragMove);
-            el.addEventListener('touchend', dragEnd);
-            el.addEventListener('mousedown', dragStart);
-            document.addEventListener('mousemove', dragMove);
-            document.addEventListener('mouseup', dragEnd);
+            reader.readAsDataURL(file);
+        } else {
+            saveToStorage();
         }
+        closeModal();
+    }
 
-        function saveAllData() {
-            const players = [];
-            document.querySelectorAll('.player-jersey').forEach(p => {
-                const rect = p.getBoundingClientRect();
-                const pitchRect = pitch.getBoundingClientRect();
-                players.push({
-                    name: p.querySelector('.player-name').innerText,
-                    num: p.querySelector('.jersey-icon').innerText,
-                    color: p.querySelector('.jersey-icon').style.backgroundColor,
-                    x: ((rect.left - pitchRect.left) / pitchRect.width) * 100 + '%',
-                    y: ((rect.top - pitchRect.top) / pitchRect.height) * 100 + '%'
-                });
+    function makeDraggable(el) {
+        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+        const dragStart = (e) => {
+            initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
+            initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
+            if (e.target.classList.contains('jersey') || e.target.classList.contains('name-label')) active = true;
+        };
+        const dragMove = (e) => {
+            if (active) {
+                e.preventDefault();
+                currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
+                currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
+                xOffset = currentX; yOffset = currentY;
+                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        };
+        const dragEnd = () => { active = false; saveToStorage(); };
+        el.addEventListener('touchstart', dragStart);
+        el.addEventListener('touchmove', dragMove);
+        el.addEventListener('touchend', dragEnd);
+        el.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('mouseup', dragEnd);
+    }
+
+    function saveToStorage() {
+        const data = [];
+        document.querySelectorAll('.player').forEach(p => {
+            data.push({
+                name: p.querySelector('.name-label').innerText,
+                num: p.querySelector('.jersey').innerText,
+                color: p.querySelector('.jersey').style.backgroundColor,
+                img: p.querySelector('.jersey').style.backgroundImage.slice(5, -2).replace(/"/g, ""),
+                x: p.style.left, y: p.style.top
             });
-            localStorage.setItem('soccerLineup_V2', JSON.stringify(players));
-        }
+        });
+        localStorage.setItem('soccerRoster', JSON.stringify(data));
+    }
 
-        function downloadLineup() {
-            html2canvas(pitch, { scale: 2 }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'matchday-lineup.png';
-                link.href = canvas.toDataURL();
-                link.click();
-            });
-        }
+    function downloadLineup() {
+        html2canvas(document.getElementById('pitch')).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'lineup.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
 
-        function rgbToHex(rgb) {
-            if (!rgb) return "#cc0000";
-            const res = rgb.match(/\d+/g);
-            return res ? "#" + res.map(x => {
-                const hex = parseInt(x).toString(16);
-                return hex.length === 1 ? "0" + hex : hex;
-            }).join("") : rgb;
-        }
+    function resetPositions() {
+        localStorage.removeItem('soccerRoster');
+        location.reload();
+    }
 
-        initApp();
-    </script>
+    window.onload = initPitch;
+</script>
 </body>
 </html>
