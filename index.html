@@ -2,160 +2,229 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Soccer Lineup Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soccer Lineup Builder</title>
     <style>
         :root {
             --pitch-green: #2e7d32;
             --line-white: rgba(255, 255, 255, 0.5);
-            --bg-dark: #121212;
-            --card-bg: #1e1e1e;
+            --accent: #007AFF;
         }
 
         body {
-            margin: 0;
             font-family: sans-serif;
-            background-color: var(--bg-dark);
+            margin: 0;
+            background: #121212;
             color: white;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow: hidden;
         }
 
-        /* 1. REGISTRATION FORM */
-        .admin-panel {
-            padding: 15px;
-            background: var(--card-bg);
-            border-bottom: 2px solid #333;
-        }
-
-        input, button {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            border: none;
-            width: 100%;
-        }
-
-        button {
-            background: #007AFF;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* 2. THE PITCH DESIGN */
-        .pitch-container {
-            flex-grow: 1;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            overflow-y: auto;
-        }
-
-        .pitch {
-            background-color: var(--pitch-green);
-            border: 2px solid white;
-            height: 300px;
+        /* 1. THE PITCH */
+        #pitch-container {
             position: relative;
-            border-radius: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            align-content: space-around;
-            justify-content: center;
-            padding: 10px;
+            width: 100%;
+            height: 60vh;
+            background-color: var(--pitch-green);
+            border-bottom: 5px solid #1b5e20;
         }
 
-        /* Pitch markings */
-        .pitch::before {
-            content: '';
+        #pitch {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Simple Pitch Markings */
+        .center-circle {
             position: absolute;
-            top: 50%; left: 0; right: 0;
-            height: 2px; background: var(--line-white);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px; height: 100px;
+            border: 2px solid var(--line-white);
+            border-radius: 50%;
         }
 
-        /* 3. PLAYERS & JERSEYS */
-        .player-slot {
-            width: 70px;
+        /* 2. PLAYER STYLE */
+        .player-jersey {
+            position: absolute;
+            width: 60px;
             text-align: center;
             cursor: grab;
-            margin: 5px;
+            touch-action: none;
+            transition: top 0.5s ease, left 0.5s ease; /* Smooth movement for formations */
             z-index: 10;
         }
 
         .jersey-img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            display: block;
+            width: 45px; height: 45px;
+            background: #d32f2f;
             margin: 0 auto;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 2px solid white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            background-size: cover;
+            background-position: center;
         }
 
-        .player-info {
+        .player-name {
             font-size: 11px;
-            font-weight: bold;
-            background: rgba(0,0,0,0.6);
-            border-radius: 3px;
-            padding: 2px;
-            margin-top: 2px;
+            background: rgba(0,0,0,0.7);
+            padding: 2px 4px;
+            border-radius: 4px;
+            margin-top: 3px;
         }
+
+        /* 3. CONTROLS AREA */
+        #controls {
+            flex-grow: 1;
+            padding: 15px;
+            background: #1e1e1e;
+            overflow-y: auto;
+        }
+
+        .section-title { font-size: 14px; margin-bottom: 10px; color: #888; text-transform: uppercase; }
+
+        .input-group { display: flex; gap: 8px; margin-bottom: 10px; }
+        
+        input[type="text"], input[type="number"] {
+            background: #333; border: 1px solid #444; color: white;
+            padding: 10px; border-radius: 8px; flex: 1;
+        }
+
+        button {
+            padding: 10px; background: var(--accent); color: white;
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
+        }
+
+        .formation-btns {
+            display: flex; gap: 10px; margin-top: 15px;
+        }
+
+        .form-btn { background: #444; flex: 1; }
     </style>
 </head>
 <body>
 
-    <div class="admin-panel">
-        <h3>Team Registration</h3>
-        <input type="text" id="pName" placeholder="Player Name">
-        <input type="number" id="pNumber" placeholder="Jersey Number">
-        <label style="font-size: 12px;">Upload Jersey Image:</label>
-        <input type="file" id="pJersey" accept="image/*">
-        <button onclick="addPlayer()">Add to Lineup</button>
-    </div>
-
-    <div class="pitch-container">
-        <h4>First Half Pitch</h4>
-        <div id="pitch1" class="pitch">
-            </div>
-
-        <h4>Substitute Bench</h4>
-        <div id="pitch2" class="pitch" style="height: 150px; background-color: #444;">
+    <div id="pitch-container">
+        <div class="center-circle"></div>
+        <div id="pitch">
             </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <div id="controls">
+        <p class="section-title">Add New Player</p>
+        <div class="input-group">
+            <input type="text" id="pName" placeholder="Name">
+            <input type="number" id="pNum" placeholder="No." style="width: 70px;">
+        </div>
+        <div class="input-group">
+            <input type="file" id="pJersey" accept="image/*" style="font-size: 12px;">
+            <button onclick="addPlayer()">Add Player</button>
+        </div>
+
+        <p class="section-title" style="margin-top:20px;">Formations</p>
+        <div class="formation-btns">
+            <button class="form-btn" onclick="applyFormation('reset')">Clear Pitch</button>
+            <button class="form-btn" onclick="applyFormation('341')">3 - 4 - 1</button>
+        </div>
+    </div>
+
     <script>
-        // Initialize Sliding/Dragging
-        new Sortable(document.getElementById('pitch1'), { group: 'shared', animation: 150 });
-        new Sortable(document.getElementById('pitch2'), { group: 'shared', animation: 150 });
+        let players = [];
 
         function addPlayer() {
             const name = document.getElementById('pName').value;
-            const number = document.getElementById('pNumber').value;
+            const num = document.getElementById('pNum').value;
             const fileInput = document.getElementById('pJersey');
-            
-            if(!name || !number) return alert("Please enter name and number");
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const playerHTML = `
-                    <div class="player-slot">
-                        <img src="${e.target.result || 'https://via.placeholder.com/50'}" class="jersey-img">
-                        <div class="player-info">#${number} ${name}</div>
-                    </div>
-                `;
-                document.getElementById('pitch2').innerHTML += playerHTML;
-                
-                // Reset inputs
-                document.getElementById('pName').value = '';
-                document.getElementById('pNumber').value = '';
+            if(!name || !num) return alert("Enter name and number!");
+            if(players.length >= 8) return alert("Max 8 players for this layout!");
+
+            const playerObj = { name, num, image: null };
+
+            if (fileInput.files && fileInput.files[0]) {
+                playerObj.image = URL.createObjectURL(fileInput.files[0]);
             }
 
-            if(fileInput.files[0]) {
-                reader.readAsDataURL(fileInput.files[0]);
-            } else {
-                reader.onload({target: {result: ''}}); // Add without image
+            createPlayerElement(playerObj);
+            players.push(playerObj);
+        }
+
+        function createPlayerElement(obj) {
+            const el = document.createElement('div');
+            el.className = 'player-jersey';
+            el.style.left = '10px'; 
+            el.style.top = '10px';
+
+            const bgStyle = obj.image ? `background-image: url(${obj.image})` : '';
+
+            el.innerHTML = `
+                <div class="jersey-img" style="${bgStyle}">${obj.image ? '' : obj.num}</div>
+                <div class="player-name">${obj.name}</div>
+            `;
+
+            makeDraggable(el);
+            document.getElementById('pitch').appendChild(el);
+            obj.element = el;
+        }
+
+        function applyFormation(type) {
+            if (type === 'reset') {
+                document.getElementById('pitch').innerHTML = '';
+                players = [];
+                return;
             }
+
+            // 3-4-1 Coordinates (Percentage of Pitch)
+            // [x, y] format
+            const coords341 = [
+                [50, 85], // GK (Optional 8th)
+                [20, 65], [50, 65], [80, 65], // 3 Defenders
+                [15, 40], [40, 40], [60, 40], [85, 40], // 4 Midfielders
+                [50, 15]  // 1 Forward
+            ];
+
+            players.forEach((p, index) => {
+                if (coords341[index]) {
+                    p.element.style.left = `calc(${coords341[index][0]}% - 30px)`;
+                    p.element.style.top = `calc(${coords341[index][1]}% - 30px)`;
+                }
+            });
+        }
+
+        function makeDraggable(el) {
+            let isDragging = false;
+            const start = () => { isDragging = true; el.style.transition = 'none'; };
+            const end = () => { isDragging = false; el.style.transition = 'top 0.5s ease, left 0.5s ease'; };
+
+            el.addEventListener('mousedown', start);
+            el.addEventListener('touchstart', start);
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                move(e.clientX, e.clientY);
+            });
+
+            document.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                move(e.touches[0].clientX, e.touches[0].clientY);
+            });
+
+            function move(clientX, clientY) {
+                const pitch = document.getElementById('pitch').getBoundingClientRect();
+                el.style.left = (clientX - pitch.left - 30) + 'px';
+                el.style.top = (clientY - pitch.top - 30) + 'px';
+            }
+
+            document.addEventListener('mouseup', end);
+            document.addEventListener('touchend', end);
         }
     </script>
 </body>
