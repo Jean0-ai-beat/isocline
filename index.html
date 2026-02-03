@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Mobile App</title>
+    <style>
+        /* 1. RESET & BASE STYLES */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            height: 100vh; /* Fill the whole screen */
+            overflow: hidden; /* Prevent the whole page from bouncing */
+        }
+
+        /* 2. HEADER */
+        header {
+            background-color: #ffffff;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        /* 3. MAIN CONTENT AREA (Scrollable) */
+        main {
+            flex-grow: 1;
+            overflow-y: auto; /* Only the content scrolls */
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* 4. BOTTOM NAVIGATION */
+        nav {
+            background-color: #ffffff;
+            height: 70px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid #ddd;
+            padding-bottom: env(safe-area-inset-bottom); /* Fix for iPhone notches */
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .nav-item.active {
+            color: #007AFF; /* "App Blue" */
+        }
+
+        .icon {
+            font-size: 24px;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <header>My Awesome App</header>
+
+    <main>
+        <div class="card">
+            <h2>Welcome!</h2>
+            <p>This looks and feels like a mobile app because the header and footer stay put while you scroll.</p>
+        </div>
+
+        <div class="card">
+            <h2>Feature One</h2>
+            <p>Using <strong>Flexbox</strong> makes it easy to stack these cards perfectly.</p>
+        </div>
+
+        <div class="card">
+            <h2>Feature Two</h2>
+            <p>Add more content here to see how the scrolling works!</p>
+        </div>
+    </main>
+
+    <nav>
+        <a href="#" class="nav-item active">
+            <span class="icon">🏠</span>
+            Home
+        </a>
+        <a href="#" class="nav-item">
+            <span class="icon">🔍</span>
+            Search
+        </a>
+        <a href="#" class="nav-item">
+            <span class="icon">👤</span>
+            Profile
+        </a>
+    </nav>
+
+</body>
+</html>
