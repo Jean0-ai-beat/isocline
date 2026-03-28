@@ -3,107 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOCLINEUP JPTECH FIX</title>
+    <title>SOCLINEUP JPTECH VERIFIED</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
             --pitch-green: #388e3c; 
             --pitch-dark: #2e7d32;
-            --line-white: rgba(255, 255, 255, 0.6); 
+            --line-white: rgba(255, 255, 255, 0.7); 
             --accent: #00e676;
         }
         
         body { 
-            font-family: 'Segoe UI', sans-serif; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             margin: 0; background: #000; color: white; 
             height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
         }
 
         /* --- HEADER --- */
         #app-header {
-            background: #111; padding: 10px; display: flex; align-items: center;
-            justify-content: space-between; border-bottom: 1px solid #333; z-index: 10;
+            background: #111; padding: 12px; display: flex; align-items: center;
+            justify-content: space-between; border-bottom: 1px solid #333; z-index: 100;
         }
         #team-crest-box {
-            width: 45px; height: 45px; border: 1px dashed #555; border-radius: 5px;
+            width: 48px; height: 48px; border: 2px dashed #444; border-radius: 8px;
             display: flex; align-items: center; justify-content: center; overflow: hidden;
-            background: #222; cursor: pointer; position: relative;
+            background: #1a1a1a; cursor: pointer; position: relative;
         }
         #team-crest-box img { width: 100%; height: 100%; object-fit: contain; position: absolute; }
-        #app-header h1 { margin: 0; font-size: 14px; color: var(--accent); flex: 1; text-align: center; }
+        #app-header h1 { margin: 0; font-size: 15px; color: var(--accent); flex: 1; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
 
         /* --- 3D STAGE --- */
         #stage {
-            flex: 1; perspective: 1200px; display: flex; flex-direction: column;
+            flex: 1; perspective: 1500px; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            background: radial-gradient(circle at center, #222 0%, #000 100%);
         }
 
         #pitch {
-            width: 90%; height: 55vh;
+            width: 92%; height: 55vh;
             background-color: var(--pitch-green);
             background-image: repeating-linear-gradient(0deg, var(--pitch-green), var(--pitch-green) 10%, var(--pitch-dark) 10%, var(--pitch-dark) 20%);
             position: relative; border: 3px solid var(--line-white);
-            transform: rotateX(20deg); box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            transform: rotateX(25deg); 
+            transform-style: preserve-3d;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
         }
 
+        /* Pitch Markings */
         .line { position: absolute; border: 1.5px solid var(--line-white); pointer-events: none; }
         .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); }
-        .penalty-box { left: 15%; width: 70%; height: 15%; border: 1.5px solid var(--line-white); }
+        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(1px); width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--line-white); }
+        .penalty-box { left: 15%; width: 70%; height: 18%; border: 2px solid var(--line-white); }
         .penalty-box.top { top: 0; border-top: none; }
         .penalty-box.bottom { bottom: 0; border-bottom: none; }
 
         /* --- PLAYERS --- */
-        .player { position: absolute; width: 60px; text-align: center; touch-action: none; cursor: grab; z-index: 20; }
+        .player { 
+            position: absolute; width: 60px; text-align: center; 
+            touch-action: none; cursor: grab; z-index: 50;
+            transform-style: preserve-3d;
+        }
         .jersey {
-            width: 46px; height: 46px; background-color: #d32f2f; border: 2px solid white;
+            width: 48px; height: 48px; background-color: #d32f2f; border: 2px solid #fff;
             border-radius: 50%; margin: 0 auto; display: flex; align-items: center; 
-            justify-content: center; font-weight: bold; font-size: 16px;
-            box-shadow: 0 4px 0px rgba(0,0,0,0.4);
+            justify-content: center; font-weight: bold; font-size: 17px; color: white;
+            box-shadow: 0 5px 0px rgba(0,0,0,0.5);
             background-size: cover; background-position: center; overflow: hidden; position: relative;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
         
-        .pattern-overlay { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; opacity: 0.3; }
+        .pattern-overlay { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; opacity: 0.4; }
         .striped { background-image: linear-gradient(90deg, #000 50%, transparent 50%); background-size: 12px 100%; }
         .hooped { background-image: linear-gradient(0deg, #000 50%, transparent 50%); background-size: 100% 12px; }
 
-        .name-label { font-size: 10px; font-weight: bold; margin-top: 5px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+        .name-label { 
+            font-size: 10px; font-weight: bold; margin-top: 6px; 
+            background: rgba(0,0,0,0.85); padding: 3px 8px; border-radius: 4px; 
+            white-space: nowrap; border: 1px solid rgba(255,255,255,0.1);
+        }
 
         /* --- BENCH --- */
-        #bench-container { background: #111; border-top: 1px solid #333; padding: 10px 0; text-align: center; }
-        #bench { width: 90%; height: 75px; border: 2px dashed #333; border-radius: 10px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px; overflow-x: auto; }
+        #bench-container { background: #111; border-top: 1px solid #333; padding: 12px 0; text-align: center; }
+        #bench { 
+            width: 90%; height: 80px; border: 2px dashed #444; border-radius: 12px; 
+            margin: 0 auto; display: flex; align-items: center; justify-content: center; 
+            gap: 10px; overflow-x: auto; background: rgba(0,0,0,0.3);
+        }
 
         /* --- CONTROLS --- */
-        #controls { padding: 10px; background: #000; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button, select { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; background: #222; font-size: 11px; }
-        .save-btn { background: var(--accent); color: black; grid-column: span 2; margin-top: 5px; }
+        #controls { padding: 12px; background: #000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button, select { padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; background: #262626; font-size: 11px; }
+        .save-btn { background: var(--accent); color: #000; grid-column: span 2; font-size: 13px; margin-top: 4px; }
 
-        /* --- EDIT MODAL --- */
+        /* --- MODAL --- */
         #editModal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #444; z-index: 1000; width: 85%; box-sizing: border-box;
+            background: #1c1c1c; padding: 25px; border-radius: 20px; border: 1px solid #444; z-index: 2000; width: 88%; box-sizing: border-box;
+            box-shadow: 0 0 100px rgba(0,0,0,0.8);
         }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; }
-        .modal-field { margin-bottom: 15px; }
-        .modal-field label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
-        input, select { width: 100%; padding: 12px; border-radius: 6px; background: #222; color: white; border: 1px solid #333; box-sizing: border-box; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; }
+        .modal-field { margin-bottom: 18px; }
+        .modal-field label { display: block; font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 12px; border-radius: 8px; background: #2a2a2a; color: white; border: 1px solid #3d3d3d; font-size: 14px; }
+        input[type="file"] { font-size: 12px; color: #aaa; }
     </style>
 </head>
 <body>
 
 <div id="app-header">
     <div id="team-crest-box" onclick="document.getElementById('crestInput').click()">
-        <span id="crestText">LOGO</span>
+        <span id="crestText" style="font-size: 9px; color: #666;">LOGO</span>
         <img id="crestImg" src="">
     </div>
     <input type="file" id="crestInput" hidden accept="image/*" onchange="uploadCrest(this)">
     <h1>SOCLINEUP JPTECH</h1>
-    <button onclick="saveRoster()" style="background: #333; font-size: 10px;">SAVE DATA</button>
+    <button onclick="saveRoster()" style="background: #333; font-size: 10px; padding: 8px 12px;">SAVE DATA</button>
 </div>
 
 <div id="stage">
     <div id="pitch">
         <div class="line halfway"></div>
+        <div class="line center-circle"></div>
         <div class="line penalty-box top"></div>
         <div class="line penalty-box bottom"></div>
     </div>
@@ -115,54 +135,55 @@
 
 <div id="controls">
     <select onchange="applyFormation(this.value)">
-        <option value="">FORMATION</option>
+        <option value="">CHANGE FORMATION</option>
         <option value="442">4-4-2</option>
         <option value="433">4-3-3</option>
         <option value="352">3-5-2</option>
     </select>
-    <button onclick="loadRoster()">LOAD DATA</button>
-    <button class="save-btn" onclick="downloadLineup()">📸 SAVE AS IMAGE</button>
+    <button onclick="loadRoster()">LOAD PREVIOUS</button>
+    <button class="save-btn" onclick="downloadLineup()">📸 EXPORT TO IMAGE</button>
 </div>
 
 <div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
 <div id="editModal">
-    <h3 style="margin: 0 0 20px 0; color: var(--accent);">Edit Player</h3>
+    <h3 style="margin: 0 0 20px 0; color: var(--accent); text-align: center;">Edit Player</h3>
     
     <div class="modal-field">
         <label>Player Name</label>
-        <input type="text" id="editName">
+        <input type="text" id="editName" placeholder="Enter name...">
     </div>
 
     <div class="modal-field">
         <label>Number</label>
-        <input type="number" id="editNum">
+        <input type="number" id="editNum" placeholder="10">
     </div>
 
     <div class="modal-field">
-        <label>Jersey Color & Pattern</label>
+        <label>Jersey Color & Style</label>
         <div style="display:flex; gap:10px;">
-            <input type="color" id="editColor" style="width: 60px; padding: 2px;">
+            <input type="color" id="editColor" value="#d32f2f" style="width: 70px; height: 45px; border:none; background:none;">
             <select id="editPattern">
-                <option value="none">Solid</option>
-                <option value="striped">Stripes</option>
-                <option value="hooped">Hoops</option>
+                <option value="none">Solid Color</option>
+                <option value="striped">Striped Style</option>
+                <option value="hooped">Hooped Style</option>
             </select>
         </div>
     </div>
 
     <div class="modal-field">
-        <label>Upload Photo (Circle Fill)</label>
+        <label>Individual Photo / Face</label>
         <input type="file" id="editImg" accept="image/*">
     </div>
 
-    <div style="display:flex; gap:10px; margin-top:20px;">
-        <button style="background:var(--accent); color:black; flex:2" onclick="saveChanges()">SAVE CHANGES</button>
-        <button style="background:#444; flex:1" onclick="closeModal()">CANCEL</button>
+    <div style="display:flex; gap:10px; margin-top:25px;">
+        <button style="background:var(--accent); color:black; flex:2; padding: 15px;" onclick="saveChanges()">APPLY</button>
+        <button style="background:#333; flex:1" onclick="closeModal()">CLOSE</button>
     </div>
 </div>
 
 <script>
     let currentPlayer = null;
+    let isDragging = false;
     const defaultData = [
         { y: 88, x: 43, n: 'GK', num: 1, c: '#ffd600' },
         { y: 72, x: 10 }, { y: 75, x: 32 }, { y: 75, x: 53 }, { y: 72, x: 75 },
@@ -189,9 +210,8 @@
             </div>
             <div class="name-label">${name}</div>`;
         
-        // CLICK HANDLER FOR EDITING
         div.addEventListener('click', (e) => {
-            if(!div.dataset.dragging) openModal(div);
+            if(!isDragging) openModal(div);
         });
 
         makeDraggable(div);
@@ -215,28 +235,22 @@
         const jersey = currentPlayer.querySelector('.jersey');
         const patternOverlay = jersey.querySelector('.pattern-overlay');
         
-        // Update Name & Number
         currentPlayer.querySelector('.name-label').innerText = document.getElementById('editName').value;
         jersey.querySelector('.num-text').innerText = document.getElementById('editNum').value;
-        
-        // Update Color
         jersey.style.backgroundColor = document.getElementById('editColor').value;
         
-        // Update Pattern
         const pattern = document.getElementById('editPattern').value;
         patternOverlay.className = 'pattern-overlay ' + (pattern !== 'none' ? pattern : '');
 
-        // Photo Upload Logic
         const file = document.getElementById('editImg').files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 jersey.style.backgroundImage = `url(${e.target.result})`;
-                jersey.querySelector('.num-text').style.display = 'none'; // Optional: hide number if photo exists
+                jersey.querySelector('.num-text').style.opacity = '0.3'; // Dim number if photo is present
             };
             reader.readAsDataURL(file);
         }
-        
         closeModal();
     }
 
@@ -246,24 +260,24 @@
         const dragStart = (e) => {
             const t = e.type === "touchstart" ? e.touches[0] : e;
             initialX = t.clientX - xOffset; initialY = t.clientY - yOffset;
-            if (e.target.closest('.player')) { active = true; el.dataset.dragging = "true"; }
+            if (e.target.closest('.player')) { active = true; isDragging = false; }
         };
 
         const dragMove = (e) => {
             if (active) {
                 e.preventDefault();
+                isDragging = true;
                 const t = e.type === "touchmove" ? e.touches[0] : e;
                 currentX = t.clientX - initialX; currentY = t.clientY - initialY;
                 xOffset = currentX; yOffset = currentY;
-                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 10px)`;
             }
         };
 
         const dragEnd = (e) => {
             if(!active) return;
             active = false;
-            setTimeout(() => delete el.dataset.dragging, 100);
-
+            
             const bench = document.getElementById('bench');
             const rect = bench.getBoundingClientRect();
             const t = (e.type === "touchend") ? e.changedTouches[0] : e;
@@ -275,7 +289,6 @@
             } else {
                 document.getElementById('pitch').appendChild(el);
                 el.style.position = "absolute";
-                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
             }
         };
 
@@ -307,49 +320,4 @@
     }
 
     function uploadCrest(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('crestImg').src = e.target.result;
-                document.getElementById('crestImg').style.display = 'block';
-                document.getElementById('crestText').style.display = 'none';
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function downloadLineup() {
-        html2canvas(document.getElementById('stage'), { backgroundColor: '#000', scale: 2 }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'lineup.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        });
-    }
-
-    function saveRoster() {
-        const data = [];
-        document.querySelectorAll('.player').forEach(p => {
-            data.push({
-                n: p.querySelector('.name-label').innerText,
-                num: p.querySelector('.num-text').innerText,
-                c: p.querySelector('.jersey').style.backgroundColor,
-                x: p.style.left, y: p.style.top
-            });
-        });
-        localStorage.setItem('jp_roster', JSON.stringify(data));
-        alert("Saved!");
-    }
-
-    function loadRoster() {
-        const raw = localStorage.getItem('jp_roster');
-        if(!raw) return alert("None found.");
-        const data = JSON.parse(raw);
-        document.getElementById('pitch').innerHTML = '<div class="line halfway"></div><div class="line penalty-box top"></div><div class="line penalty-box bottom"></div>';
-        data.forEach(p => createPlayer(p.y.replace('%',''), p.x.replace('%',''), p.n, p.num, p.c, document.getElementById('pitch')));
-    }
-
-    window.onload = init;
-</script>
-</body>
-</html>
+        if (input.files && input.
