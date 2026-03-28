@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOCLINEUP JPTECH STABLE PRO</title>
+    <title>SOCLINEUP JPTECH EXTREME</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
@@ -32,7 +32,7 @@
         #team-crest-box img { width: 100%; height: 100%; object-fit: contain; }
         #app-header h1 { margin: 0; font-size: 14px; color: var(--accent); flex: 1; text-align: center; text-transform: uppercase; }
 
-        /* --- 3D PITCH --- */
+        /* --- 3D PITCH & MARKINGS --- */
         #stage {
             flex: 1; perspective: 1200px; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle at center, #222 0%, #000 100%);
@@ -49,8 +49,9 @@
         }
 
         .line { position: absolute; border: 1.5px solid var(--line-white); pointer-events: none; }
-        .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); }
-        .penalty-box { left: 15%; width: 70%; height: 20%; border: 2px solid var(--line-white); }
+        .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); transform: translateY(-50%); }
+        .center-circle { top: 50%; left: 50%; width: 90px; height: 90px; border: 2px solid var(--line-white); border-radius: 50%; transform: translate(-50%, -50%); }
+        .penalty-box { left: 15%; width: 70%; height: 18%; border: 2px solid var(--line-white); }
         .penalty-box.top { top: 0; border-top: none; }
         .penalty-box.bottom { bottom: 0; border-bottom: none; }
 
@@ -69,20 +70,22 @@
         .pattern { position: absolute; width: 100%; height: 100%; border-radius: 50%; opacity: 0.3; pointer-events: none; }
         .striped { background: repeating-linear-gradient(90deg, #000, #000 10px, transparent 10px, transparent 20px); }
         .hooped { background: repeating-linear-gradient(0deg, #000, #000 10px, transparent 10px, transparent 20px); }
-
-        .name-label { font-size: 10px; font-weight: bold; margin-top: 5px; background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 3px; }
+        .name-label { font-size: 10px; font-weight: bold; margin-top: 5px; background: rgba(0,0,0,0.8); padding: 2px 5px; border-radius: 3px; white-space: nowrap; }
 
         /* --- BENCH --- */
-        #bench-area { background: #111; padding: 10px 0; border-top: 1px solid #333; }
+        #bench-area { background: #111; padding: 5px 0; border-top: 1px solid #333; }
+        #bench-label { font-size: 9px; color: #555; text-align: center; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 1px; }
         #bench { 
-            width: 90%; height: 80px; margin: 0 auto; border: 2px dashed #444; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center; gap: 10px; overflow-x: auto;
+            width: 92%; height: 85px; margin: 0 auto; border: 2px dashed #333; border-radius: 12px;
+            display: flex; align-items: center; gap: 12px; overflow-x: auto; padding: 0 15px;
+            background: rgba(255,255,255,0.02);
         }
 
         /* --- CONTROLS --- */
-        #controls { padding: 15px; background: #000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        #controls { padding: 12px; background: #000; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         button, select { padding: 12px; border: none; border-radius: 6px; font-weight: bold; color: white; background: #222; font-size: 11px; }
-        .main-btn { background: var(--accent); color: #000; grid-column: span 2; font-size: 14px; }
+        .add-player-btn { background: #333; color: var(--accent); border: 1px solid var(--accent); }
+        .main-btn { background: var(--accent); color: #000; grid-column: span 2; font-size: 13px; }
 
         /* --- MODAL --- */
         #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; }
@@ -90,8 +93,8 @@
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: #1a1a1a; padding: 20px; border-radius: 15px; width: 85%; z-index: 2001; border: 1px solid #333;
         }
-        .field { margin-bottom: 15px; }
-        .field label { display: block; font-size: 10px; color: #888; margin-bottom: 5px; }
+        .field { margin-bottom: 12px; }
+        .field label { display: block; font-size: 10px; color: #888; margin-bottom: 4px; }
         input, select { width: 100%; padding: 10px; background: #222; border: 1px solid #333; color: white; border-radius: 5px; box-sizing: border-box; }
     </style>
 </head>
@@ -99,48 +102,46 @@
 
 <div id="app-header">
     <div id="team-crest-box" onclick="document.getElementById('crestIn').click()">
-        <span id="crestStatus" style="font-size:10px">LOGO</span>
+        <span id="crestStatus" style="font-size:9px">LOGO</span>
         <img id="crestPrev" src="" style="display:none">
     </div>
     <input type="file" id="crestIn" hidden accept="image/*" onchange="loadCrest(this)">
-    <h1>SOCLINEUP PRO</h1>
+    <h1>SOCLINEUP JPTECH</h1>
     <button onclick="saveData()">SAVE</button>
 </div>
 
 <div id="stage">
     <div id="pitch">
         <div class="line halfway"></div>
+        <div class="line center-circle"></div>
         <div class="line penalty-box top"></div>
         <div class="line penalty-box bottom"></div>
     </div>
 </div>
 
 <div id="bench-area">
+    <div id="bench-label">Bench / Substitutes</div>
     <div id="bench"></div>
 </div>
 
 <div id="controls">
-    <select id="formSelect" onchange="changeFormation(this.value)">
+    <button class="add-player-btn" onclick="addNewBenchPlayer()">➕ NEW PLAYER</button>
+    <select onchange="changeFormation(this.value)">
         <option value="">FORMATIONS</option>
         <option value="442">4-4-2</option>
         <option value="433">4-3-3</option>
         <option value="352">3-5-2</option>
     </select>
-    <button onclick="loadData()">LOAD</button>
-    <button class="main-btn" onclick="exportImage()">📸 EXPORT LINEUP</button>
+    <button onclick="loadData()">LOAD PREVIOUS</button>
+    <button onclick="location.reload()">RESET ALL</button>
+    <button class="main-btn" onclick="exportImage()">📸 EXPORT LINEUP IMAGE</button>
 </div>
 
 <div id="modal-overlay"></div>
 <div id="edit-modal">
-    <h3 style="margin-top:0">Player Settings</h3>
-    <div class="field">
-        <label>Name</label>
-        <input type="text" id="pName">
-    </div>
-    <div class="field">
-        <label>Number</label>
-        <input type="number" id="pNum">
-    </div>
+    <h3 style="margin-top:0; color:var(--accent)">Edit Player</h3>
+    <div class="field"><label>Name</label><input type="text" id="pName"></div>
+    <div class="field"><label>Number</label><input type="number" id="pNum"></div>
     <div class="field">
         <label>Jersey Color & Pattern</label>
         <div style="display:flex; gap:5px;">
@@ -152,12 +153,9 @@
             </select>
         </div>
     </div>
-    <div class="field">
-        <label>Player Photo / Custom Jersey</label>
-        <input type="file" id="pImg" accept="image/*">
-    </div>
-    <div style="display:flex; gap:10px;">
-        <button style="background:var(--accent); color:black; flex:1" onclick="applyPlayerChanges()">APPLY</button>
+    <div class="field"><label>Photo / Jersey File</label><input type="file" id="pImg" accept="image/*"></div>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button style="background:var(--accent); color:black; flex:1; padding:15px" onclick="applyPlayerChanges()">APPLY</button>
         <button style="background:#333; flex:1" onclick="closeModal()">CANCEL</button>
     </div>
 </div>
@@ -166,29 +164,45 @@
     let activePlayer = null;
     let dragThreshold = false;
 
+    // Default Starting 11
     const initialPlayers = [
         {y:88, x:43, n:'GK', num:1, c:'#ffd600'},
-        {y:70, x:10}, {y:75, x:32}, {y:75, x:53}, {y:70, x:75},
-        {y:45, x:20}, {y:48, x:43}, {y:45, x:65},
-        {y:18, x:15}, {y:12, x:43}, {y:18, x:72}
+        {y:72, x:10}, {y:75, x:32}, {y:75, x:53}, {y:72, x:75},
+        {y:48, x:22}, {y:50, x:43}, {y:48, x:64},
+        {y:20, x:15}, {y:12, x:43}, {y:20, x:72}
     ];
 
-    function createPlayer(data, i) {
+    function createPlayer(data, parent) {
         const p = document.createElement('div');
         p.className = 'player';
-        p.style.top = data.y + '%';
-        p.style.left = data.x + '%';
+        
+        // If it's on the pitch, use absolute positioning
+        if(parent.id === 'pitch') {
+            p.style.top = data.y + '%';
+            p.style.left = data.x + '%';
+        } else {
+            p.style.position = 'static';
+            p.style.transform = 'scale(0.85)';
+        }
+
         p.innerHTML = `
             <div class="jersey" style="background-color:${data.c || '#d32f2f'}">
                 <div class="pattern"></div>
-                <span class="num-txt">${data.num || i+1}</span>
+                <span class="num-txt">${data.num || '?'}</span>
             </div>
-            <div class="name-label">${data.n || 'PLAYER'}</div>
+            <div class="name-label">${data.n || 'NEW PLAYER'}</div>
         `;
         
         p.addEventListener('click', () => { if(!dragThreshold) openModal(p); });
         makeDraggable(p);
-        document.getElementById('pitch').appendChild(p);
+        parent.appendChild(p);
+    }
+
+    // FEATURE: Add new player directly to bench
+    function addNewBenchPlayer() {
+        const bench = document.getElementById('bench');
+        createPlayer({n: 'SUB', num: 12, c: '#444'}, bench);
+        bench.scrollLeft = bench.scrollWidth; // Auto scroll to see new player
     }
 
     function openModal(el) {
@@ -207,11 +221,9 @@
     function applyPlayerChanges() {
         const jersey = activePlayer.querySelector('.jersey');
         const pattern = jersey.querySelector('.pattern');
-        
         activePlayer.querySelector('.name-label').innerText = document.getElementById('pName').value;
         jersey.querySelector('.num-txt').innerText = document.getElementById('pNum').value;
         jersey.style.backgroundColor = document.getElementById('pColor').value;
-        
         pattern.className = 'pattern ' + document.getElementById('pPattern').value;
         
         const file = document.getElementById('pImg').files[0];
@@ -219,7 +231,7 @@
             const reader = new FileReader();
             reader.onload = (e) => {
                 jersey.style.backgroundImage = `url(${e.target.result})`;
-                jersey.querySelector('.num-txt').style.opacity = '0.4';
+                jersey.querySelector('.num-txt').style.opacity = '0.3';
             };
             reader.readAsDataURL(file);
         }
@@ -240,37 +252,48 @@
             dragThreshold = true;
             xOffset = e.touches[0].clientX - initialX;
             yOffset = e.touches[0].clientY - initialY;
-            el.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 0)`;
+            el.style.transform = `translate3d(${xOffset}px, ${yOffset}px, 50px)`;
+            el.style.zIndex = "1000";
         }, {passive:false});
 
         window.addEventListener('touchend', (e) => {
             if (!active) return;
             active = false;
             const bench = document.getElementById('bench');
+            const pitch = document.getElementById('pitch');
             const bRect = bench.getBoundingClientRect();
             const touch = e.changedTouches[0];
 
-            if (touch.clientX > bRect.left && touch.clientX < bRect.right && touch.clientY > bRect.top && touch.clientY < bRect.bottom) {
+            if (touch.clientY > bRect.top) {
                 bench.appendChild(el);
                 el.style.position = 'static';
-                el.style.transform = 'scale(0.8)';
+                el.style.transform = 'scale(0.85)';
+                el.style.zIndex = "500";
             } else {
-                document.getElementById('pitch').appendChild(el);
+                pitch.appendChild(el);
                 el.style.position = 'absolute';
+                el.style.zIndex = "500";
+                // Convert pixels back to % relative to pitch
+                const pRect = pitch.getBoundingClientRect();
+                el.style.left = ((touch.clientX - pRect.left - 30) / pRect.width * 100) + '%';
+                el.style.top = ((touch.clientY - pRect.top - 30) / pRect.height * 100) + '%';
+                el.style.transform = 'none';
             }
+            xOffset = 0; yOffset = 0;
         });
     }
 
     function changeFormation(val) {
         const ps = document.querySelectorAll('.player');
+        const pitch = document.getElementById('pitch');
         let c = [];
-        if(val==='442') c=[{y:88,x:43},{y:70,x:10},{y:75,x:32},{y:75,x:53},{y:70,x:75},{y:45,x:10},{y:48,x:35},{y:48,x:55},{y:45,x:80},{y:20,x:35},{y:20,x:55}];
-        if(val==='433') c=[{y:88,x:43},{y:70,x:10},{y:75,x:32},{y:75,x:53},{y:70,x:75},{y:48,x:22},{y:50,x:43},{y:48,x:64},{y:20,x:15},{y:15,x:43},{y:20,x:72}];
-        if(val==='352') c=[{y:88,x:43},{y:75,x:22},{y:78,x:43},{y:75,x:64},{y:48,x:10},{y:50,x:28},{y:52,x:43},{y:50,x:58},{y:48,x:80},{y:20,x:35},{y:20,x:55}];
+        if(val==='442') c=[{y:88,x:43},{y:72,x:10},{y:75,x:32},{y:75,x:53},{y:72,x:75},{y:50,x:10},{y:52,x:35},{y:52,x:52},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
+        if(val==='433') c=[{y:88,x:43},{y:72,x:10},{y:75,x:32},{y:75,x:53},{y:72,x:75},{y:52,x:22},{y:55,x:43},{y:52,x:64},{y:22,x:15},{y:15,x:43},{y:22,x:72}];
+        if(val==='352') c=[{y:88,x:43},{y:75,x:22},{y:78,x:43},{y:75,x:64},{y:50,x:10},{y:52,x:28},{y:55,x:43},{y:52,x:58},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
         
         c.forEach((pos, i) => {
             if(ps[i]) {
-                document.getElementById('pitch').appendChild(ps[i]);
+                pitch.appendChild(ps[i]);
                 ps[i].style.position = 'absolute';
                 ps[i].style.top = pos.y + '%';
                 ps[i].style.left = pos.x + '%';
@@ -292,9 +315,10 @@
     }
 
     function exportImage() {
-        html2canvas(document.getElementById('stage')).then(canvas => {
+        const stage = document.getElementById('stage');
+        html2canvas(stage, {scale: 2}).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'my-lineup.png';
+            link.download = 'jp-lineup.png';
             link.href = canvas.toDataURL();
             link.click();
         });
@@ -307,22 +331,30 @@
                 n: p.querySelector('.name-label').innerText,
                 num: p.querySelector('.num-txt').innerText,
                 c: p.querySelector('.jersey').style.backgroundColor,
-                x: p.style.left, y: p.style.top
+                x: p.style.left, y: p.style.top,
+                onBench: p.parentElement.id === 'bench'
             });
         });
-        localStorage.setItem('jp_lineup_save', JSON.stringify(players));
-        alert("Saved to phone!");
+        localStorage.setItem('jp_pro_save', JSON.stringify(players));
+        alert("Lineup saved!");
     }
 
     function loadData() {
-        const saved = localStorage.getItem('jp_lineup_save');
+        const saved = localStorage.getItem('jp_pro_save');
         if(!saved) return;
         const data = JSON.parse(saved);
-        document.getElementById('pitch').innerHTML = '<div class="line halfway"></div><div class="line penalty-box top"></div><div class="line penalty-box bottom"></div>';
-        data.forEach((d, i) => createPlayer(d, i));
+        document.getElementById('pitch').innerHTML = '<div class="line halfway"></div><div class="line center-circle"></div><div class="line penalty-box top"></div><div class="line penalty-box bottom"></div>';
+        document.getElementById('bench').innerHTML = '';
+        data.forEach(d => {
+            const parent = d.onBench ? document.getElementById('bench') : document.getElementById('pitch');
+            createPlayer(d, parent);
+        });
     }
 
-    window.onload = () => initialPlayers.forEach((p, i) => createPlayer(p, i));
+    window.onload = () => {
+        const pitch = document.getElementById('pitch');
+        initialPlayers.forEach(p => createPlayer(p, pitch));
+    };
 </script>
 </body>
 </html>
