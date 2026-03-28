@@ -1,307 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOCLINEUP PRO ELITE</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        :root { 
-            --pitch-green: #2e7d32; 
-            --pitch-line: rgba(255, 255, 255, 0.9);
-            --accent: #00e676;
-            --bg-dark: #0a0a0a;
-        }
-        
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica; 
-            margin: 0; background: var(--bg-dark); color: white; 
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-            user-select: none; -webkit-user-select: none;
-        }
+<style>
+    /* ... (keep your existing root and header styles) ... */
+    
+    body { 
+        touch-action: none; /* Crucial: stops the page from bouncing */
+        overscroll-behavior: none;
+    }
 
-        /* --- UI HEADER --- */
-        #header {
-            height: 60px; background: #151515; display: flex; align-items: center;
-            padding: 0 20px; border-bottom: 1px solid #333; justify-content: space-between;
-        }
-        #header h1 { font-size: 14px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin: 0; }
-        .btn-icon { background: #252525; border: 1px solid #444; color: white; padding: 8px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; }
+    .player { 
+        position: absolute; width: 60px; text-align: center; 
+        z-index: 500;
+        /* Soft transition for formation changes and landing */
+        transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), top 0.3s ease, left 0.3s ease;
+        will-change: transform, top, left;
+        cursor: grab;
+    }
 
-        /* --- 3D ARENA --- */
-        #arena {
-            flex: 1; perspective: 1200px; display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
-            position: relative;
-        }
+    /* Professional "Lift" effect when dragging */
+    .player.is-dragging {
+        transition: none; /* Remove transition while moving for 1:1 feel */
+        transform: scale(1.15) !important;
+        z-index: 1000;
+        filter: drop-shadow(0 15px 15px rgba(0,0,0,0.5));
+    }
 
-        #pitch {
-            width: 90vw; height: 55vh; background-color: var(--pitch-green);
-            background-image: linear-gradient(rgba(255,255,255,0.05) 50%, transparent 50%);
-            background-size: 100% 10%;
-            position: relative; border: 4px solid var(--pitch-line);
-            transform: rotateX(20deg); transform-style: preserve-3d;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-        }
-
-        /* Pro Lines */
-        .p-line { position: absolute; border: 2px solid var(--pitch-line); pointer-events: none; box-sizing: border-box; }
-        .p-half { top: 50%; width: 100%; border-width: 1px 0 0 0; }
-        .p-circle { top: 50%; left: 50%; width: 100px; height: 100px; border-radius: 50%; transform: translate(-50%, -50%); }
-        .p-box { left: 18%; width: 64%; height: 18%; border-width: 0 2px 2px 2px; }
-        .p-box.top { top: 0; border-width: 2px 2px 2px 2px; border-top: 0; }
-        .p-box.bottom { bottom: 0; border-width: 2px 2px 0 2px; }
-
-        /* --- PLAYER SYSTEM --- */
-        .player {
-            position: absolute; width: 60px; height: 80px;
-            display: flex; flex-direction: column; align-items: center;
-            cursor: pointer; z-index: 10; transition: transform 0.2s cubic-bezier(0.17, 0.67, 0.83, 0.67);
-            touch-action: none;
-        }
-        
-        .player.active { transform: scale(1.2) translateY(-10px); z-index: 9999 !important; }
-
-        .kit {
-            width: 46px; height: 46px; border-radius: 50%; background: #d32f2f;
-            border: 3px solid #fff; box-shadow: 0 8px 15px rgba(0,0,0,0.4);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 18px; position: relative;
-            background-size: cover; background-position: center;
-        }
-
-        .name-tag {
-            margin-top: 6px; font-size: 10px; font-weight: bold;
-            background: rgba(0,0,0,0.85); padding: 3px 8px; border-radius: 4px;
-            text-transform: uppercase; white-space: nowrap; border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        /* --- BENCH & CONTROLS --- */
-        #footer { background: #111; border-top: 1px solid #333; padding: 15px 0; }
-        #bench {
-            width: 90%; height: 90px; margin: 0 auto 15px; border: 2px dashed #333;
-            border-radius: 12px; display: flex; align-items: center; gap: 15px;
-            padding: 0 15px; overflow-x: auto; background: rgba(0,0,0,0.2);
-        }
-        
-        #toolbar {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
-            padding: 0 20px;
-        }
-        .tool-btn { background: #222; border: none; color: white; padding: 12px; border-radius: 8px; font-size: 10px; font-weight: bold; }
-        .btn-primary { background: var(--accent); color: black; grid-column: span 2; }
-
-        /* --- EDIT MODAL --- */
-        #overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; backdrop-filter: blur(5px); }
-        #modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 85%; background: #1c1c1c; border-radius: 20px; padding: 25px; z-index: 10001;
-        }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 10px; color: #888; margin-bottom: 5px; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 12px; background: #252525; border: 1px solid #333; color: white; border-radius: 8px; box-sizing: border-box; }
-    </style>
-</head>
-<body>
-
-<div id="header">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <div id="crest-spot" onclick="document.getElementById('crest-file').click()" style="width:40px; height:40px; background:#222; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden; border:1px solid #444;">
-            <span id="crest-ph" style="font-size:8px">LOGO</span>
-            <img id="crest-img" src="" style="display:none; width:100%; height:100%; object-fit:contain;">
-        </div>
-        <input type="file" id="crest-file" hidden accept="image/*" onchange="updateCrest(this)">
-    </div>
-    <h1>Lineup Pro</h1>
-    <button class="btn-icon" onclick="saveSession()">SAVE</button>
-</div>
-
-<div id="arena">
-    <div id="pitch">
-        <div class="p-line p-half"></div>
-        <div class="p-line p-circle"></div>
-        <div class="p-line p-box top"></div>
-        <div class="p-line p-box bottom"></div>
-    </div>
-</div>
-
-<div id="footer">
-    <div id="bench"></div>
-    <div id="toolbar">
-        <button class="tool-btn" onclick="addSubstitute()">+ PLAYER</button>
-        <select class="tool-btn" onchange="setFormation(this.value)">
-            <option value="442">4-4-2</option>
-            <option value="433">4-3-3</option>
-            <option value="352">3-5-2</option>
-        </select>
-        <button class="tool-btn btn-primary" onclick="downloadImage()">EXPORT IMAGE</button>
-    </div>
-</div>
-
-<div id="overlay"></div>
-<div id="modal">
-    <h2 style="margin:0 0 20px 0; font-size:18px;">Edit Player</h2>
-    <div class="input-group"><label>Full Name</label><input type="text" id="mName"></div>
-    <div class="input-group"><label>Number</label><input type="number" id="mNum"></div>
-    <div class="input-group"><label>Kit Color</label><input type="color" id="mColor" style="height:50px; padding:2px;"></div>
-    <div class="input-group"><label>Photo</label><input type="file" id="mFile" accept="image/*"></div>
-    <div style="display:flex; gap:10px; margin-top:20px;">
-        <button class="tool-btn btn-primary" style="flex:1" onclick="applyEdit()">APPLY</button>
-        <button class="tool-btn" style="flex:1" onclick="closeModal()">CLOSE</button>
-    </div>
-</div>
+    .jersey {
+        pointer-events: none; /* Ensures touch goes to the player div */
+        /* ... existing styles ... */
+    }
+</style>
 
 <script>
-    let currentTarget = null;
+    let activePlayer = null;
     let isDragging = false;
-    let dragData = { startX: 0, startY: 0, initialX: 0, initialY: 0 };
+    let startX, startY, initialLeft, initialTop;
 
-    const starters = [
-        {y:88, x:43, n:'GK', num:1, c:'#ffd600'},
-        {y:70, x:12}, {y:75, x:33}, {y:75, x:53}, {y:70, x:74},
-        {y:45, x:15}, {y:48, x:43}, {y:45, x:71},
-        {y:18, x:18}, {y:12, x:43}, {y:18, x:68}
-    ];
-
-    function init() {
-        starters.forEach(s => spawnPlayer(s, document.getElementById('pitch')));
-    }
-
-    function spawnPlayer(data, parent) {
-        const div = document.createElement('div');
-        div.className = 'player';
-        div.innerHTML = `
-            <div class="kit" style="background-color:${data.c || '#d32f2f'}">${data.num || ''}</div>
-            <div class="name-tag">${data.n || 'NEW PLAYER'}</div>
-        `;
+    function createPlayer(data, parent) {
+        const p = document.createElement('div');
+        p.className = 'player';
         
         if(parent.id === 'pitch') {
-            div.style.top = data.y + '%';
-            div.style.left = data.x + '%';
-        }
-
-        div.addEventListener('touchstart', onTouchStart, {passive: false});
-        div.addEventListener('mousedown', onTouchStart);
-        parent.appendChild(div);
-    }
-
-    function onTouchStart(e) {
-        currentTarget = e.currentTarget;
-        isDragging = false;
-        const evt = e.type.includes('touch') ? e.touches[0] : e;
-        
-        dragData.startX = evt.clientX;
-        dragData.startY = evt.clientY;
-
-        const rect = currentTarget.getBoundingClientRect();
-        dragData.offX = evt.clientX - rect.left;
-        dragData.offY = evt.clientY - rect.top;
-
-        window.addEventListener('mousemove', onTouchMove);
-        window.addEventListener('touchmove', onTouchMove, {passive: false});
-        window.addEventListener('mouseup', onTouchEnd);
-        window.addEventListener('touchend', onTouchEnd);
-    }
-
-    function onTouchMove(e) {
-        if(!currentTarget) return;
-        const evt = e.type.includes('touch') ? e.touches[0] : e;
-        
-        if (Math.abs(evt.clientX - dragData.startX) > 5 || Math.abs(evt.clientY - dragData.startY) > 5) {
-            isDragging = true;
-            currentTarget.classList.add('active');
-            currentTarget.style.position = 'fixed';
-            currentTarget.style.left = (evt.clientX - dragData.offX) + 'px';
-            currentTarget.style.top = (evt.clientY - dragData.offY) + 'px';
-        }
-    }
-
-    function onTouchEnd(e) {
-        if(!currentTarget) return;
-        
-        if(!isDragging) {
-            openModal(currentTarget);
+            p.style.top = data.y + '%';
+            p.style.left = data.x + '%';
         } else {
-            const pitch = document.getElementById('pitch');
-            const bench = document.getElementById('bench');
-            const pRect = pitch.getBoundingClientRect();
-            const bRect = bench.getBoundingClientRect();
-            const evt = e.type.includes('touch') ? e.changedTouches[0] : e;
+            p.style.position = 'static';
+            p.style.transform = 'scale(0.85)';
+        }
 
-            if(evt.clientY > bRect.top) {
-                bench.appendChild(currentTarget);
-                currentTarget.style.position = 'relative';
-                currentTarget.style.left = 'auto'; currentTarget.style.top = 'auto';
+        p.innerHTML = `
+            <div class="jersey" style="background-color:${data.c || '#d32f2f'}">
+                <div class="pattern"></div>
+                <span class="num-txt">${data.num || '?'}</span>
+            </div>
+            <div class="name-label">${data.n || 'NEW PLAYER'}</div>
+        `;
+        
+        // Use unified pointer events for "Softer" response
+        p.addEventListener('pointerdown', startDragging);
+        parent.appendChild(p);
+    }
+
+    function startDragging(e) {
+        // Only allow dragging with left mouse or touch
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+        
+        activePlayer = e.currentTarget;
+        isDragging = false; // Reset drag state
+        
+        const rect = activePlayer.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        // Set up the movement tracking
+        window.addEventListener('pointermove', moveDragging);
+        window.addEventListener('pointerup', stopDragging);
+        
+        // Visual "Soft Pop"
+        activePlayer.setPointerCapture(e.pointerId);
+    }
+
+    function moveDragging(e) {
+        if (!activePlayer) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        // Threshold to differentiate between a click (edit) and a drag
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+            isDragging = true;
+            activePlayer.classList.add('is-dragging');
+            
+            // Move using translate3d for hardware acceleration (smoothness)
+            activePlayer.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.15)`;
+        }
+    }
+
+    function stopDragging(e) {
+        if (!activePlayer) return;
+
+        window.removeEventListener('pointermove', moveDragging);
+        window.removeEventListener('pointerup', stopDragging);
+
+        if (!isDragging) {
+            // It was just a tap/click - Open Edit Modal
+            openModal(activePlayer);
+        } else {
+            // It was a drag - Process landing
+            const bench = document.getElementById('bench');
+            const pitch = document.getElementById('pitch');
+            const bRect = bench.getBoundingClientRect();
+            
+            activePlayer.classList.remove('is-dragging');
+
+            if (e.clientY > bRect.top) {
+                // Drop on Bench
+                bench.appendChild(activePlayer);
+                activePlayer.style.position = 'static';
+                activePlayer.style.transform = 'scale(0.85)';
             } else {
-                pitch.appendChild(currentTarget);
-                currentTarget.style.position = 'absolute';
-                const x = ((evt.clientX - pRect.left - 30) / pRect.width) * 100;
-                const y = ((evt.clientY - pRect.top - 40) / pRect.height) * 100;
-                currentTarget.style.left = Math.min(Math.max(x, 0), 92) + '%';
-                currentTarget.style.top = Math.min(Math.max(y, 0), 92) + '%';
+                // Drop on Pitch
+                pitch.appendChild(activePlayer);
+                activePlayer.style.position = 'absolute';
+                
+                const pRect = pitch.getBoundingClientRect();
+                // Smoothly calculate landing percentage
+                let newX = ((e.clientX - pRect.left - 30) / pRect.width) * 100;
+                let newY = ((e.clientY - pRect.top - 30) / pRect.height) * 100;
+                
+                activePlayer.style.left = Math.max(0, Math.min(92, newX)) + '%';
+                activePlayer.style.top = Math.max(0, Math.min(92, newY)) + '%';
+                activePlayer.style.transform = 'none';
             }
         }
-
-        currentTarget.classList.remove('active');
-        window.removeEventListener('mousemove', onTouchMove);
-        window.removeEventListener('touchmove', onTouchMove);
-        currentTarget = null;
-    }
-
-    // Modal Logic
-    function openModal(el) {
-        currentTarget = el;
-        document.getElementById('mName').value = el.querySelector('.name-tag').innerText;
-        document.getElementById('mNum').value = el.querySelector('.kit').innerText;
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('modal').style.display = 'block';
-    }
-
-    function closeModal() {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('modal').style.display = 'none';
-        currentTarget = null;
-    }
-
-    function applyEdit() {
-        const kit = currentTarget.querySelector('.kit');
-        currentTarget.querySelector('.name-tag').innerText = document.getElementById('mName').value;
-        kit.innerText = document.getElementById('mNum').value;
-        kit.style.backgroundColor = document.getElementById('mColor').value;
         
-        const file = document.getElementById('mFile').files[0];
-        if(file) {
-            const reader = new FileReader();
-            reader.onload = (e) => kit.style.backgroundImage = `url(${e.target.result})`;
-            reader.readAsDataURL(file);
-        }
-        closeModal();
+        activePlayer = null;
     }
 
-    function addSubstitute() { spawnPlayer({n: 'SUB', num: 12, c:'#333'}, document.getElementById('bench')); }
-
-    function downloadImage() {
-        html2canvas(document.getElementById('arena')).then(canvas => {
-            const a = document.createElement('a');
-            a.href = canvas.toDataURL();
-            a.download = 'lineup.png';
-            a.click();
+    // Formation logic with smooth transitions
+    function changeFormation(val) {
+        const ps = document.querySelectorAll('.player');
+        const pitch = document.getElementById('pitch');
+        let c = [];
+        if(val==='442') c=[{y:88,x:43},{y:72,x:10},{y:75,x:32},{y:75,x:53},{y:72,x:75},{y:50,x:10},{y:52,x:35},{y:52,x:52},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
+        if(val==='433') c=[{y:88,x:43},{y:72,x:10},{y:75,x:32},{y:75,x:53},{y:72,x:75},{y:52,x:22},{y:55,x:43},{y:52,x:64},{y:22,x:15},{y:15,x:43},{y:22,x:72}];
+        if(val==='352') c=[{y:88,x:43},{y:75,x:22},{y:78,x:43},{y:75,x:64},{y:50,x:10},{y:52,x:28},{y:55,x:43},{y:52,x:58},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
+        
+        c.forEach((pos, i) => {
+            if(ps[i]) {
+                pitch.appendChild(ps[i]);
+                ps[i].style.position = 'absolute';
+                // Trigger the CSS transition
+                setTimeout(() => {
+                    ps[i].style.top = pos.y + '%';
+                    ps[i].style.left = pos.x + '%';
+                    ps[i].style.transform = 'none';
+                }, 10);
+            }
         });
     }
 
-    function updateCrest(input) {
-        if(input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                document.getElementById('crest-img').src = e.target.result;
-                document.getElementById('crest-img').style.display = 'block';
-                document.getElementById('crest-ph').style.display = 'none';
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    init();
+    /* ... (Keep the rest of your helper functions like openModal, saveData, loadData) ... */
 </script>
-</body>
-</html>
