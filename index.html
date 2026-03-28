@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOCLINEUP JPTECH ULTIMATE</title>
+    <title>SOCLINEUP JPTECH FIX</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
@@ -19,7 +19,7 @@
             height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
         }
 
-        /* --- HEADER & LOGO --- */
+        /* --- HEADER --- */
         #app-header {
             background: #111; padding: 10px; display: flex; align-items: center;
             justify-content: space-between; border-bottom: 1px solid #333; z-index: 10;
@@ -29,19 +29,18 @@
             display: flex; align-items: center; justify-content: center; overflow: hidden;
             background: #222; cursor: pointer; position: relative;
         }
-        #team-crest-box img { width: 100%; height: 100%; object-fit: contain; position: absolute; top:0; left:0; }
-        #app-header h1 { margin: 0; font-size: 14px; color: var(--accent); flex: 1; text-align: center; letter-spacing: 1px; }
+        #team-crest-box img { width: 100%; height: 100%; object-fit: contain; position: absolute; }
+        #app-header h1 { margin: 0; font-size: 14px; color: var(--accent); flex: 1; text-align: center; }
 
         /* --- 3D STAGE --- */
         #stage {
             flex: 1; perspective: 1200px; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            overflow: hidden;
         }
 
         #pitch {
-            width: 92%; height: 58vh;
+            width: 90%; height: 55vh;
             background-color: var(--pitch-green);
             background-image: repeating-linear-gradient(0deg, var(--pitch-green), var(--pitch-green) 10%, var(--pitch-dark) 10%, var(--pitch-dark) 20%);
             position: relative; border: 3px solid var(--line-white);
@@ -50,56 +49,56 @@
 
         .line { position: absolute; border: 1.5px solid var(--line-white); pointer-events: none; }
         .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); }
-        .penalty-box { left: 15%; width: 70%; height: 15%; }
+        .penalty-box { left: 15%; width: 70%; height: 15%; border: 1.5px solid var(--line-white); }
         .penalty-box.top { top: 0; border-top: none; }
         .penalty-box.bottom { bottom: 0; border-bottom: none; }
 
         /* --- PLAYERS --- */
-        .player { position: absolute; width: 55px; text-align: center; touch-action: none; cursor: grab; z-index: 20; transition: transform 0.1s; }
+        .player { position: absolute; width: 60px; text-align: center; touch-action: none; cursor: grab; z-index: 20; }
         .jersey {
-            width: 44px; height: 44px; background-color: #d32f2f; border: 2px solid white;
+            width: 46px; height: 46px; background-color: #d32f2f; border: 2px solid white;
             border-radius: 50%; margin: 0 auto; display: flex; align-items: center; 
-            justify-content: center; font-weight: bold; font-size: 15px;
+            justify-content: center; font-weight: bold; font-size: 16px;
             box-shadow: 0 4px 0px rgba(0,0,0,0.4);
             background-size: cover; background-position: center; overflow: hidden; position: relative;
         }
         
-        /* Patterns */
-        .pattern-overlay { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; }
-        .striped { background-image: linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.2) 50%); background-size: 12px 100%; }
-        .hooped { background-image: linear-gradient(0deg, transparent 50%, rgba(0,0,0,0.2) 50%); background-size: 100% 12px; }
+        .pattern-overlay { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; opacity: 0.3; }
+        .striped { background-image: linear-gradient(90deg, #000 50%, transparent 50%); background-size: 12px 100%; }
+        .hooped { background-image: linear-gradient(0deg, #000 50%, transparent 50%); background-size: 100% 12px; }
 
-        .name-label { font-size: 9px; font-weight: bold; margin-top: 4px; background: rgba(0,0,0,0.85); padding: 2px 5px; border-radius: 3px; white-space: nowrap; }
+        .name-label { font-size: 10px; font-weight: bold; margin-top: 5px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
 
         /* --- BENCH --- */
         #bench-container { background: #111; border-top: 1px solid #333; padding: 10px 0; text-align: center; }
-        #bench-title { font-size: 9px; color: #666; margin-bottom: 5px; text-transform: uppercase; }
-        #bench { width: 95%; height: 70px; border: 2px dashed #333; border-radius: 10px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 5px; overflow-x: auto; }
+        #bench { width: 90%; height: 75px; border: 2px dashed #333; border-radius: 10px; margin: 0 auto; display: flex; align-items: center; justify-content: center; gap: 8px; overflow-x: auto; }
 
         /* --- CONTROLS --- */
-        #controls { padding: 10px; background: #000; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
-        button, select { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; background: #222; font-size: 10px; }
-        .save-btn { background: var(--accent); color: black; grid-column: span 3; padding: 15px; margin-top: 5px; font-size: 12px; }
+        #controls { padding: 10px; background: #000; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        button, select { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: white; background: #222; font-size: 11px; }
+        .save-btn { background: var(--accent); color: black; grid-column: span 2; margin-top: 5px; }
 
-        /* --- MODAL --- */
+        /* --- EDIT MODAL --- */
         #editModal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #444; z-index: 100; width: 85%; box-sizing: border-box;
+            background: #1a1a1a; padding: 25px; border-radius: 15px; border: 1px solid #444; z-index: 1000; width: 85%; box-sizing: border-box;
         }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 99; }
-        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; background: #222; color: white; border: 1px solid #444; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; }
+        .modal-field { margin-bottom: 15px; }
+        .modal-field label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; border-radius: 6px; background: #222; color: white; border: 1px solid #333; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
 <div id="app-header">
     <div id="team-crest-box" onclick="document.getElementById('crestInput').click()">
-        <span id="crestText" style="font-size: 9px;">LOGO</span>
-        <img id="crestImg" src="" style="display:none;">
+        <span id="crestText">LOGO</span>
+        <img id="crestImg" src="">
     </div>
     <input type="file" id="crestInput" hidden accept="image/*" onchange="uploadCrest(this)">
     <h1>SOCLINEUP JPTECH</h1>
-    <button onclick="saveRoster()">SAVE</button>
+    <button onclick="saveRoster()" style="background: #333; font-size: 10px;">SAVE DATA</button>
 </div>
 
 <div id="stage">
@@ -111,40 +110,53 @@
 </div>
 
 <div id="bench-container">
-    <div id="bench-title">Substitutes Bench (Drag to Swap)</div>
     <div id="bench"></div>
 </div>
 
 <div id="controls">
-    <select id="formationSelect" onchange="applyFormation(this.value)">
+    <select onchange="applyFormation(this.value)">
         <option value="">FORMATION</option>
         <option value="442">4-4-2</option>
         <option value="433">4-3-3</option>
         <option value="352">3-5-2</option>
     </select>
-    <button onclick="loadRoster()">LOAD</button>
-    <button onclick="location.reload()">RESET</button>
-    <button class="save-btn" onclick="downloadLineup()">📸 SAVE TO GALLERY</button>
+    <button onclick="loadRoster()">LOAD DATA</button>
+    <button class="save-btn" onclick="downloadLineup()">📸 SAVE AS IMAGE</button>
 </div>
 
 <div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
 <div id="editModal">
-    <h3 style="margin-top:0">Player Details</h3>
-    <input type="text" id="editName" placeholder="Name">
-    <input type="number" id="editNum" placeholder="Number">
-    <label style="font-size:11px">Color & Pattern:</label>
-    <div style="display:flex; gap:5px;">
-        <input type="color" id="editColor" value="#d32f2f" style="width:50px">
-        <select id="editPattern">
-            <option value="none">Solid</option>
-            <option value="striped">Striped</option>
-            <option value="hooped">Hooped</option>
-        </select>
+    <h3 style="margin: 0 0 20px 0; color: var(--accent);">Edit Player</h3>
+    
+    <div class="modal-field">
+        <label>Player Name</label>
+        <input type="text" id="editName">
     </div>
-    <label style="font-size:11px">Player Photo / Custom Jersey:</label>
-    <input type="file" id="editImg" accept="image/*">
-    <div style="display:flex; gap:10px; margin-top:15px;">
-        <button style="background:#28a745; flex:1" onclick="saveChanges()">APPLY</button>
+
+    <div class="modal-field">
+        <label>Number</label>
+        <input type="number" id="editNum">
+    </div>
+
+    <div class="modal-field">
+        <label>Jersey Color & Pattern</label>
+        <div style="display:flex; gap:10px;">
+            <input type="color" id="editColor" style="width: 60px; padding: 2px;">
+            <select id="editPattern">
+                <option value="none">Solid</option>
+                <option value="striped">Stripes</option>
+                <option value="hooped">Hoops</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="modal-field">
+        <label>Upload Photo (Circle Fill)</label>
+        <input type="file" id="editImg" accept="image/*">
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:20px;">
+        <button style="background:var(--accent); color:black; flex:2" onclick="saveChanges()">SAVE CHANGES</button>
         <button style="background:#444; flex:1" onclick="closeModal()">CANCEL</button>
     </div>
 </div>
@@ -154,7 +166,7 @@
     const defaultData = [
         { y: 88, x: 43, n: 'GK', num: 1, c: '#ffd600' },
         { y: 72, x: 10 }, { y: 75, x: 32 }, { y: 75, x: 53 }, { y: 72, x: 75 },
-        { y: 50, x: 20 }, { y: 52, x: 43 }, { y: 50, x: 65 },
+        { y: 52, x: 22 }, { y: 55, x: 43 }, { y: 52, x: 64 },
         { y: 22, x: 15 }, { y: 15, x: 42 }, { y: 22, x: 70 }
     ];
 
@@ -177,62 +189,13 @@
             </div>
             <div class="name-label">${name}</div>`;
         
+        // CLICK HANDLER FOR EDITING
         div.addEventListener('click', (e) => {
             if(!div.dataset.dragging) openModal(div);
         });
 
         makeDraggable(div);
         parent.appendChild(div);
-    }
-
-    function makeDraggable(el) {
-        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-        
-        const dragStart = (e) => {
-            const t = e.type === "touchstart" ? e.touches[0] : e;
-            initialX = t.clientX - xOffset; 
-            initialY = t.clientY - yOffset;
-            if (e.target.closest('.player')) { active = true; el.dataset.dragging = "true"; }
-        };
-
-        const dragMove = (e) => {
-            if (active) {
-                e.preventDefault();
-                const t = e.type === "touchmove" ? e.touches[0] : e;
-                currentX = t.clientX - initialX; 
-                currentY = t.clientY - initialY;
-                xOffset = currentX; yOffset = currentY;
-                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-            }
-        };
-
-        const dragEnd = (e) => {
-            if(!active) return;
-            active = false;
-            setTimeout(() => delete el.dataset.dragging, 100);
-
-            const bench = document.getElementById('bench');
-            const rect = bench.getBoundingClientRect();
-            const t = (e.type === "touchend") ? e.changedTouches[0] : e;
-            
-            if (t.clientX >= rect.left && t.clientX <= rect.right && t.clientY >= rect.top && t.clientY <= rect.bottom) {
-                bench.appendChild(el);
-                el.style.position = "static";
-                el.style.transform = "scale(0.85)";
-                xOffset = 0; yOffset = 0;
-            } else {
-                document.getElementById('pitch').appendChild(el);
-                el.style.position = "absolute";
-                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-            }
-        };
-
-        el.addEventListener('touchstart', dragStart, {passive: false});
-        el.addEventListener('touchmove', dragMove, {passive: false});
-        el.addEventListener('touchend', dragEnd);
-        el.addEventListener('mousedown', dragStart);
-        document.addEventListener('mousemove', dragMove);
-        document.addEventListener('mouseup', dragEnd);
     }
 
     function openModal(el) {
@@ -252,20 +215,76 @@
         const jersey = currentPlayer.querySelector('.jersey');
         const patternOverlay = jersey.querySelector('.pattern-overlay');
         
+        // Update Name & Number
         currentPlayer.querySelector('.name-label').innerText = document.getElementById('editName').value;
         jersey.querySelector('.num-text').innerText = document.getElementById('editNum').value;
+        
+        // Update Color
         jersey.style.backgroundColor = document.getElementById('editColor').value;
         
+        // Update Pattern
         const pattern = document.getElementById('editPattern').value;
         patternOverlay.className = 'pattern-overlay ' + (pattern !== 'none' ? pattern : '');
 
+        // Photo Upload Logic
         const file = document.getElementById('editImg').files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = (e) => jersey.style.backgroundImage = `url(${e.target.result})`;
+            reader.onload = (e) => {
+                jersey.style.backgroundImage = `url(${e.target.result})`;
+                jersey.querySelector('.num-text').style.display = 'none'; // Optional: hide number if photo exists
+            };
             reader.readAsDataURL(file);
         }
+        
         closeModal();
+    }
+
+    function makeDraggable(el) {
+        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+        
+        const dragStart = (e) => {
+            const t = e.type === "touchstart" ? e.touches[0] : e;
+            initialX = t.clientX - xOffset; initialY = t.clientY - yOffset;
+            if (e.target.closest('.player')) { active = true; el.dataset.dragging = "true"; }
+        };
+
+        const dragMove = (e) => {
+            if (active) {
+                e.preventDefault();
+                const t = e.type === "touchmove" ? e.touches[0] : e;
+                currentX = t.clientX - initialX; currentY = t.clientY - initialY;
+                xOffset = currentX; yOffset = currentY;
+                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        };
+
+        const dragEnd = (e) => {
+            if(!active) return;
+            active = false;
+            setTimeout(() => delete el.dataset.dragging, 100);
+
+            const bench = document.getElementById('bench');
+            const rect = bench.getBoundingClientRect();
+            const t = (e.type === "touchend") ? e.changedTouches[0] : e;
+            
+            if (t.clientX >= rect.left && t.clientX <= rect.right && t.clientY >= rect.top && t.clientY <= rect.bottom) {
+                bench.appendChild(el);
+                el.style.position = "static";
+                el.style.transform = "scale(0.85)";
+            } else {
+                document.getElementById('pitch').appendChild(el);
+                el.style.position = "absolute";
+                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        };
+
+        el.addEventListener('touchstart', dragStart, {passive: false});
+        el.addEventListener('touchmove', dragMove, {passive: false});
+        el.addEventListener('touchend', dragEnd);
+        el.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('mouseup', dragEnd);
     }
 
     function applyFormation(val) {
@@ -299,47 +318,35 @@
         }
     }
 
+    function downloadLineup() {
+        html2canvas(document.getElementById('stage'), { backgroundColor: '#000', scale: 2 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'lineup.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+
     function saveRoster() {
         const data = [];
         document.querySelectorAll('.player').forEach(p => {
             data.push({
-                name: p.querySelector('.name-label').innerText,
+                n: p.querySelector('.name-label').innerText,
                 num: p.querySelector('.num-text').innerText,
-                color: p.querySelector('.jersey').style.backgroundColor,
-                x: p.style.left, y: p.style.top,
-                inBench: p.parentElement.id === 'bench',
-                img: p.querySelector('.jersey').style.backgroundImage
+                c: p.querySelector('.jersey').style.backgroundColor,
+                x: p.style.left, y: p.style.top
             });
         });
-        localStorage.setItem('jptech_save_slot', JSON.stringify(data));
-        alert("Lineup saved successfully!");
+        localStorage.setItem('jp_roster', JSON.stringify(data));
+        alert("Saved!");
     }
 
     function loadRoster() {
-        const raw = localStorage.getItem('jptech_save_slot');
-        if(!raw) return alert("No saved data found.");
+        const raw = localStorage.getItem('jp_roster');
+        if(!raw) return alert("None found.");
         const data = JSON.parse(raw);
         document.getElementById('pitch').innerHTML = '<div class="line halfway"></div><div class="line penalty-box top"></div><div class="line penalty-box bottom"></div>';
-        document.getElementById('bench').innerHTML = '';
-        data.forEach(p => {
-            const parent = p.inBench ? document.getElementById('bench') : document.getElementById('pitch');
-            createPlayer(p.y.replace('%',''), p.x.replace('%',''), p.name, p.num, p.color, parent);
-            if(p.inBench) {
-                const last = parent.lastChild;
-                last.style.position = "static";
-                last.style.transform = "scale(0.85)";
-            }
-        });
-    }
-
-    function downloadLineup() {
-        const stage = document.getElementById('stage');
-        html2canvas(stage, { backgroundColor: '#000', useCORS: true, scale: 2 }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'jptech_lineup.png';
-            link.href = canvas.toDataURL();
-            link.click();
-        });
+        data.forEach(p => createPlayer(p.y.replace('%',''), p.x.replace('%',''), p.n, p.num, p.c, document.getElementById('pitch')));
     }
 
     window.onload = init;
