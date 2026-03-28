@@ -8,194 +8,283 @@
     <style>
         :root { 
             --pitch-green: #2e7d32; 
-            --pitch-dark: #1b5e20;
-            --line-white: rgba(255, 255, 255, 0.8);
-            --accent: #00e676;
-            --bg-dark: #121212;
+            --pitch-dark: #27632a;
+            --line-white: rgba(255, 255, 255, 0.8); 
+            --accent: #ff9800;
         }
-
+        
         body { 
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; background: var(--bg-dark); color: white; 
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
+            margin: 0; 
+            background: #121212; 
+            color: white; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
         }
 
-        /* --- MOBILE APP HEADER --- */
+        /* --- MOBILE APP INTERFACE --- */
         #app-header {
-            background: #1a1a1a; padding: 12px; text-align: center;
-            border-bottom: 1px solid #333; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            background: #1a1a1a;
+            padding: 12px;
+            text-align: center;
+            border-bottom: 2px solid #333;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 10;
         }
-        #app-header h1 { margin: 0; font-size: 18px; letter-spacing: 1px; color: var(--accent); }
+        #app-header h1 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: 1px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+        #team-name-display {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 4px;
+            font-style: italic;
+        }
 
-        /* --- REALISTIC PITCH --- */
+        /* --- THE PROFESSIONAL PITCH --- */
         #pitch-container {
-            flex: 1; position: relative; overflow: hidden; padding: 10px;
-            display: flex; align-items: center; justify-content: center;
+            flex: 1;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #121212;
         }
 
         #pitch {
-            background: var(--pitch-green);
+            background-color: var(--pitch-green);
+            /* Striped Grass Effect */
             background-image: repeating-linear-gradient(
-                to bottom,
+                90deg,
                 var(--pitch-green),
                 var(--pitch-green) 10%,
                 var(--pitch-dark) 10%,
                 var(--pitch-dark) 20%
             );
-            width: 100%; height: 100%; max-width: 500px;
-            position: relative; border: 4px solid var(--line-white);
-            border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            width: 100%; 
+            max-width: 500px;
+            height: 100%; 
+            position: relative; 
+            border: 4px solid var(--line-white);
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
         }
 
-        /* Pitch Lines */
+        /* Field Markings */
         .line { position: absolute; border: 2px solid var(--line-white); pointer-events: none; }
-        .halfway { top: 50%; width: 100%; transform: translateY(-50%); border-bottom: 2px solid var(--line-white); }
+        .halfway { top: 50%; width: 100%; left:0; border-bottom: 2px solid var(--line-white); }
         .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; }
-        .penalty-box { left: 20%; width: 60%; height: 14%; }
-        .top-box { top: 0; border-top: none; }
-        .bottom-box { bottom: 0; border-bottom: none; }
-        .goal-area { left: 35%; width: 30%; height: 5%; position: absolute; border: 2px solid var(--line-white); }
-        .top-goal { top: 0; border-top: none; }
-        .bottom-goal { bottom: 0; border-bottom: none; }
+        .center-spot { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 4px; height: 4px; background: var(--line-white); border-radius: 50%; }
+        
+        .penalty-box { left: 15%; width: 70%; height: 14%; border-top: none; }
+        .penalty-box.top { top: 0; border-top: none; }
+        .penalty-box.bottom { bottom: 0; border-bottom: none; }
+        
+        .goal-area { left: 30%; width: 40%; height: 5%; }
+        .goal-area.top { top: 0; border-top: none; }
+        .goal-area.bottom { bottom: 0; border-bottom: none; }
+
+        .penalty-arc { 
+            left: 35%; width: 30%; height: 8%; border-radius: 50%; 
+        }
+        .penalty-arc.top { top: 10%; border-bottom: none; border-left: none; border-right: none; }
+        .penalty-arc.bottom { bottom: 10%; border-top: none; border-left: none; border-right: none; }
 
         /* --- PLAYERS --- */
         .player {
-            position: absolute; width: 60px; text-align: center; 
-            touch-action: none; cursor: pointer; z-index: 10;
-            transition: transform 0.1s;
+            position: absolute; width: 65px; text-align: center; touch-action: none; cursor: grab; z-index: 20;
+            transition: transform 0.1s ease;
         }
         .jersey {
-            width: 44px; height: 44px; background-color: #d32f2f; 
-            border: 3px solid #fff; border-radius: 50%; margin: 0 auto; 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: 900; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            background-size: cover; background-position: center;
+            width: 42px; height: 42px; background-color: #e21b1b; border: 2px solid white;
+            border-radius: 50%; margin: 0 auto; display: flex; align-items: center; 
+            justify-content: center; font-weight: bold; background-size: cover; background-position: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
         }
         .name-label { 
             font-size: 10px; font-weight: bold; margin-top: 4px; 
-            background: rgba(0,0,0,0.8); padding: 2px 6px; 
-            border-radius: 4px; display: inline-block; white-space: nowrap;
+            background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px;
+            white-space: nowrap; border: 1px solid rgba(255,255,255,0.2);
         }
 
-        /* --- BOTTOM NAVIGATION BAR --- */
-        #nav-bar {
-            background: #1a1a1a; display: flex; justify-content: space-around;
-            padding: 10px 0; border-top: 1px solid #333; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        /* --- CONTROLS / NAV --- */
+        #controls { 
+            padding: 10px; 
+            background: #1a1a1a; 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            border-top: 1px solid #333;
         }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center;
-            color: #888; font-size: 10px; cursor: pointer; border: none; background: none;
+        
+        .quick-tools {
+            grid-column: span 2;
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
         }
-        .nav-item.active { color: var(--accent); }
-        .nav-icon { font-size: 20px; margin-bottom: 4px; }
 
-        /* --- MODALS --- */
+        button { 
+            padding: 12px; border: none; border-radius: 8px; font-weight: bold; 
+            cursor: pointer; font-size: 12px; color: white;
+            display: flex; align-items: center; justify-content: center; gap: 5px;
+        }
+
+        select {
+            background: #333; color: white; border: 1px solid #444; padding: 10px; border-radius: 8px;
+        }
+
+        /* --- MODAL --- */
         #editModal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #222; padding: 20px; border-radius: 20px; border: 1px solid #444; 
-            z-index: 100; width: 85%; max-width: 350px; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            background: #222; padding: 20px; border-radius: 15px; border: 2px solid #444; z-index: 100; width: 85%;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
         }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; box-sizing: border-box; background: #333; color: white; }
         .btn-row { display: flex; gap: 10px; margin-top: 15px; }
-        button.primary { background: var(--accent); color: black; border: none; padding: 12px; border-radius: 8px; font-weight: bold; flex: 1; }
-        button.secondary { background: #444; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; flex: 1; }
     </style>
 </head>
 <body>
 
 <div id="app-header">
     <h1>SOCLINEUP JPTECH</h1>
+    <div id="team-name-display" onclick="editTeamName()">Tap to set Team Name</div>
 </div>
 
 <div id="pitch-container">
     <div id="pitch">
         <div class="line halfway"></div>
         <div class="line center-circle"></div>
-        <div class="line penalty-box top-box"></div>
-        <div class="line goal-area top-goal"></div>
-        <div class="line penalty-box bottom-box"></div>
-        <div class="line goal-area bottom-goal"></div>
+        <div class="line center-spot"></div>
         
-        </div>
-</div>
+        <div class="line penalty-box top"></div>
+        <div class="line goal-area top"></div>
+        <div class="line penalty-arc top"></div>
+        
+        <div class="line penalty-box bottom"></div>
+        <div class="line goal-area bottom"></div>
+        <div class="line penalty-arc bottom"></div>
 
-<div id="nav-bar">
-    <button class="nav-item" onclick="downloadLineup()">
-        <span class="nav-icon">📸</span>
-        <span>SAVE</span>
-    </button>
-    <button class="nav-item" onclick="changeFormation()">
-        <span class="nav-icon">📋</span>
-        <span>FORMATION</span>
-    </button>
-    <button class="nav-item" onclick="resetPositions()">
-        <span class="nav-icon">🔄</span>
-        <span>RESET</span>
-    </button>
-</div>
-
-<div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
-<div id="editModal">
-    <h3 style="margin-top:0">Player Details</h3>
-    <input type="text" id="editName" placeholder="Player Name">
-    <input type="number" id="editNum" placeholder="Number">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <label>Color:</label>
-        <input type="color" id="editColor" style="padding:0; height:40px;">
+        <div style="position:absolute; top:0; left:0; width:15px; height:15px; border-right:2px solid var(--line-white); border-bottom:2px solid var(--line-white); border-radius:0 0 100% 0;"></div>
+        <div style="position:absolute; top:0; right:0; width:15px; height:15px; border-left:2px solid var(--line-white); border-bottom:2px solid var(--line-white); border-radius:0 0 0 100%;"></div>
     </div>
+</div>
+
+<div id="controls">
+    <div class="quick-tools">
+        <select id="formationSelect" onchange="changeFormation()" style="flex:2">
+            <option value="">Select Formation</option>
+            <option value="442">4-4-2</option>
+            <option value="433">4-3-3</option>
+            <option value="352">3-5-2</option>
+        </select>
+        <button style="background: #444; flex:1" onclick="resetPositions()">Reset</button>
+    </div>
+    <button style="background: var(--accent); grid-column: span 2;" onclick="downloadLineup()">📸 Export Lineup Image</button>
+</div>
+
+<div class="modal-overlay" id="overlay"></div>
+<div id="editModal">
+    <h3 id="modalTitle">Edit Player</h3>
+    <input type="text" id="editName" placeholder="Player Name">
+    <input type="number" id="editNum" placeholder="Jersey Number">
+    <div style="display:flex; align-items:center; gap:10px; margin: 10px 0;">
+        <label>Jersey:</label>
+        <input type="color" id="editColor" value="#e21b1b" style="width:50px; padding:2px;">
+    </div>
+    <label style="font-size:12px; color:#aaa;">Custom Logo/Photo:</label>
+    <input type="file" id="editImg" accept="image/*">
     <div class="btn-row">
-        <button class="primary" onclick="saveChanges()">APPLY</button>
-        <button class="secondary" onclick="closeModal()">CLOSE</button>
+        <button style="background:#28a745" onclick="saveChanges()">Apply</button>
+        <button style="background:#d32f2f" onclick="closeModal()">Cancel</button>
     </div>
 </div>
 
 <script>
     let currentPlayer = null;
-    
-    // Classic 4-4-2 Formation by default
-    const formations = {
-        "4-4-2": [
-            { y: 88, x: 44, role: 'GK', color: '#ffeb3b' },
-            { y: 72, x: 10 }, { y: 75, x: 33 }, { y: 75, x: 56 }, { y: 72, x: 79 },
-            { y: 48, x: 10 }, { y: 52, x: 33 }, { y: 52, x: 56 }, { y: 48, x: 79 },
-            { y: 20, x: 30 }, { y: 20, x: 58 }
-        ],
-        "4-3-3": [
-            { y: 88, x: 44, role: 'GK', color: '#ffeb3b' },
-            { y: 72, x: 10 }, { y: 75, x: 33 }, { y: 75, x: 56 }, { y: 72, x: 79 },
-            { y: 50, x: 20 }, { y: 55, x: 44 }, { y: 50, x: 68 },
-            { y: 20, x: 15 }, { y: 15, x: 44 }, { y: 20, x: 73 }
-        ]
-    };
+    const defaultPositions = [
+        { y: 88, x: 43, role: 'GK', color: '#ffcc00', name: 'Goalkeeper' },
+        { y: 72, x: 10 }, { y: 75, x: 32 }, { y: 75, x: 55 }, { y: 72, x: 78 },
+        { y: 48, x: 20 }, { y: 48, x: 43 }, { y: 48, x: 66 },
+        { y: 22, x: 15 }, { y: 15, x: 43 }, { y: 22, x: 72 }
+    ];
 
-    function initPitch(formationKey = "4-4-2") {
+    function initPitch() {
+        const savedData = JSON.parse(localStorage.getItem('soccerRoster'));
+        const dataToUse = savedData || defaultPositions;
+        
         const pitch = document.getElementById('pitch');
         // Clear existing players
-        const existing = document.querySelectorAll('.player');
-        existing.forEach(p => p.remove());
-
-        const dataToUse = formations[formationKey];
+        document.querySelectorAll('.player').forEach(p => p.remove());
 
         dataToUse.forEach((p, i) => {
             const playerDiv = document.createElement('div');
             playerDiv.className = 'player';
-            playerDiv.style.top = p.y + '%';
-            playerDiv.style.left = p.x + '%';
+            playerDiv.style.top = p.y + (typeof p.y === 'string' ? '' : '%');
+            playerDiv.style.left = p.x + (typeof p.x === 'string' ? '' : '%');
+            playerDiv.dataset.index = i;
 
             playerDiv.innerHTML = `
-                <div class="jersey" style="background-color: ${p.color || '#d32f2f'}">${p.num || (i+1)}</div>
-                <div class="name-label">${p.name || 'PLAYER'}</div>
+                <div class="jersey" style="background-color: ${p.color || '#e21b1b'}; background-image: url(${p.img || ''})">${p.num || (i+1)}</div>
+                <div class="name-label">${p.name || 'Player ' + (i+1)}</div>
             `;
 
-            playerDiv.addEventListener('click', (e) => {
-                // Prevent modal if we just finished dragging
-                if(!playerDiv.classList.contains('dragging')) openModal(playerDiv);
-            });
-            
+            playerDiv.addEventListener('click', () => openModal(playerDiv));
             makeDraggable(playerDiv);
             pitch.appendChild(playerDiv);
         });
+        
+        const savedTeam = localStorage.getItem('soccerTeamName');
+        if(savedTeam) document.getElementById('team-name-display').innerText = savedTeam;
+    }
+
+    function changeFormation() {
+        const formation = document.getElementById('formationSelect').value;
+        if(!formation) return;
+        
+        // Simple logic for 4-4-2 example
+        if(formation === "442") {
+             const f442 = [
+                {y:88,x:43}, {y:72,x:10}, {y:75,x:32}, {y:75,x:55}, {y:72,x:78},
+                {y:45,x:10}, {y:48,x:35}, {y:48,x:52}, {y:45,x:78}, {y:18,x:35}, {y:18,x:52}
+             ];
+             applyFormation(f442);
+        } else if(formation === "433") {
+             const f433 = [
+                {y:88,x:43}, {y:72,x:10}, {y:75,x:32}, {y:75,x:55}, {y:72,x:78},
+                {y:48,x:20}, {y:52,x:43}, {y:48,x:66}, {y:18,x:15}, {y:12,x:43}, {y:18,x:72}
+             ];
+             applyFormation(f433);
+        }
+    }
+
+    function applyFormation(coords) {
+        const players = document.querySelectorAll('.player');
+        coords.forEach((c, i) => {
+            if(players[i]) {
+                players[i].style.top = c.y + '%';
+                players[i].style.left = c.x + '%';
+                players[i].style.transform = 'translate3d(0,0,0)';
+            }
+        });
+        saveToStorage();
+    }
+
+    function editTeamName() {
+        const newName = prompt("Enter Team Name:", "My Team");
+        if(newName) {
+            document.getElementById('team-name-display').innerText = newName;
+            localStorage.setItem('soccerTeamName', newName);
+        }
     }
 
     function openModal(el) {
@@ -209,50 +298,59 @@
     function closeModal() {
         document.getElementById('editModal').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
+        document.getElementById('editImg').value = '';
     }
 
     function saveChanges() {
-        if(!currentPlayer) return;
-        currentPlayer.querySelector('.name-label').innerText = document.getElementById('editName').value.toUpperCase();
-        currentPlayer.querySelector('.jersey').innerText = document.getElementById('editNum').value;
-        currentPlayer.querySelector('.jersey').style.backgroundColor = document.getElementById('editColor').value;
-        closeModal();
-    }
+        const name = document.getElementById('editName').value;
+        const num = document.getElementById('editNum').value;
+        const color = document.getElementById('editColor').value;
+        const file = document.getElementById('editImg').files[0];
 
-    function changeFormation() {
-        const keys = Object.keys(formations);
-        const current = prompt("Choose formation: 4-4-2 or 4-3-3", "4-4-2");
-        if(formations[current]) initPitch(current);
+        currentPlayer.querySelector('.name-label').innerText = name;
+        currentPlayer.querySelector('.jersey').innerText = num;
+        currentPlayer.querySelector('.jersey').style.backgroundColor = color;
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentPlayer.querySelector('.jersey').style.backgroundImage = `url(${e.target.result})`;
+                saveToStorage();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            saveToStorage();
+        }
+        closeModal();
     }
 
     function makeDraggable(el) {
         let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
         
         const dragStart = (e) => {
-            el.classList.add('dragging');
-            const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
-            initialX = clientX - xOffset;
-            initialY = clientY - yOffset;
+            const touch = e.type === "touchstart" ? e.touches[0] : e;
+            initialX = touch.clientX - xOffset;
+            initialY = touch.clientY - yOffset;
             if (e.target.closest('.player')) active = true;
         };
 
         const dragMove = (e) => {
             if (active) {
                 e.preventDefault();
-                const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
-                const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
-                currentX = clientX - initialX;
-                currentY = clientY - initialY;
-                xOffset = currentX;
+                const touch = e.type === "touchmove" ? e.touches[0] : e;
+                currentX = touch.clientX - initialX;
+                currentY = touch.clientY - initialY;
+                xOffset = currentX; 
                 yOffset = currentY;
                 el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
             }
         };
 
-        const dragEnd = () => {
-            active = false;
-            setTimeout(() => el.classList.remove('dragging'), 100);
+        const dragEnd = () => { 
+            if(active) {
+                active = false; 
+                saveToStorage();
+            }
         };
 
         el.addEventListener('touchstart', dragStart, {passive: false});
@@ -263,21 +361,39 @@
         document.addEventListener('mouseup', dragEnd);
     }
 
+    function saveToStorage() {
+        const data = [];
+        document.querySelectorAll('.player').forEach(p => {
+            data.push({
+                name: p.querySelector('.name-label').innerText,
+                num: p.querySelector('.jersey').innerText,
+                color: p.querySelector('.jersey').style.backgroundColor,
+                img: p.querySelector('.jersey').style.backgroundImage.slice(5, -2).replace(/"/g, ""),
+                x: p.style.left, 
+                y: p.style.top
+            });
+        });
+        localStorage.setItem('soccerRoster', JSON.stringify(data));
+    }
+
     function downloadLineup() {
         const pitch = document.getElementById('pitch');
         html2canvas(pitch, { scale: 2 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'my-lineup.png';
-            link.href = canvas.toDataURL('image/png');
+            link.download = 'jptech-lineup.png';
+            link.href = canvas.toDataURL();
             link.click();
         });
     }
 
     function resetPositions() {
-        if(confirm("Reset all players?")) initPitch();
+        if(confirm("Reset all players to default?")) {
+            localStorage.removeItem('soccerRoster');
+            location.reload();
+        }
     }
 
-    window.onload = () => initPitch();
+    window.onload = initPitch;
 </script>
 </body>
 </html>
