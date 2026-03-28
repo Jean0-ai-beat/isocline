@@ -1,91 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SOCLINEUP JPTECH PRO</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root { 
+            --pitch-green: #2e7d32; 
+            --pitch-dark: #1b5e20;
+            --line-white: rgba(255, 255, 255, 0.8);
+            --accent: #00e676;
+            --bg-dark: #121212;
+        }
 
-<style>
-    /* --- THE PRO PITCH --- */
-    #pitch {
-        width: 90%; height: 80%; position: relative;
-        border: 2px solid rgba(255,255,255,0.8);
-        transform: rotateX(10deg);
-        box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        /* Professional grass stripes */
-        background: repeating-linear-gradient(
-            0deg,
-            #1b5e20,
-            #1b5e20 10%,
-            #236b28 10%,
-            #236b28 20%
-        );
-    }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; background: var(--bg-dark); color: white; 
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
+        }
 
-    .line { position: absolute; border: 1.5px solid rgba(255,255,255,0.8); pointer-events: none; }
-    
-    /* Center Markings */
-    .halfway { top: 50%; width: 100%; border-bottom: 2px solid rgba(255,255,255,0.8); }
-    .center-circle { 
-        top: 50%; left: 50%; transform: translate(-50%, -50%); 
-        width: 80px; height: 80px; border-radius: 50%; 
-    }
-    .center-spot {
-        top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 4px; height: 4px; background: white; border-radius: 50%;
-    }
+        /* --- MOBILE APP HEADER --- */
+        #app-header {
+            background: #1a1a1a; padding: 12px; text-align: center;
+            border-bottom: 1px solid #333; box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        #app-header h1 { margin: 0; font-size: 18px; letter-spacing: 1px; color: var(--accent); }
 
-    /* Penalty Areas (18-yard box) */
-    .penalty-box { left: 20%; width: 60%; height: 16%; }
-    .top-box { top: 0; border-top: none; }
-    .bottom-box { bottom: 0; border-bottom: none; }
+        /* --- REALISTIC PITCH --- */
+        #pitch-container {
+            flex: 1; position: relative; overflow: hidden; padding: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-    /* Goal Areas (6-yard box) */
-    .goal-area { left: 35%; width: 30%; height: 6%; }
-    .top-goal { top: 0; border-top: none; }
-    .bottom-goal { bottom: 0; border-bottom: none; }
+        #pitch {
+            background: var(--pitch-green);
+            background-image: repeating-linear-gradient(
+                to bottom,
+                var(--pitch-green),
+                var(--pitch-green) 10%,
+                var(--pitch-dark) 10%,
+                var(--pitch-dark) 20%
+            );
+            width: 100%; height: 100%; max-width: 500px;
+            position: relative; border: 4px solid var(--line-white);
+            border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
 
-    /* Penalty Arcs (The "D") */
-    .arc { 
-        width: 60px; height: 30px; 
-        left: 50%; transform: translateX(-50%); 
-        border-radius: 0 0 50px 50px; 
-    }
-    .top-arc { top: 16%; border-top: none; }
-    .bottom-arc { 
-        bottom: 16%; border-bottom: none; 
-        border-radius: 50px 50px 0 0; 
-    }
+        /* Pitch Lines */
+        .line { position: absolute; border: 2px solid var(--line-white); pointer-events: none; }
+        .halfway { top: 50%; width: 100%; transform: translateY(-50%); border-bottom: 2px solid var(--line-white); }
+        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; }
+        .penalty-box { left: 20%; width: 60%; height: 14%; }
+        .top-box { top: 0; border-top: none; }
+        .bottom-box { bottom: 0; border-bottom: none; }
+        .goal-area { left: 35%; width: 30%; height: 5%; position: absolute; border: 2px solid var(--line-white); }
+        .top-goal { top: 0; border-top: none; }
+        .bottom-goal { bottom: 0; border-bottom: none; }
 
-    /* Penalty Spots */
-    .penalty-spot {
-        left: 50%; transform: translateX(-50%);
-        width: 4px; height: 4px; background: white; border-radius: 50%;
-    }
-    .top-spot { top: 12%; }
-    .bottom-spot { bottom: 12%; }
+        /* --- PLAYERS --- */
+        .player {
+            position: absolute; width: 60px; text-align: center; 
+            touch-action: none; cursor: pointer; z-index: 10;
+            transition: transform 0.1s;
+        }
+        .jersey {
+            width: 44px; height: 44px; background-color: #d32f2f; 
+            border: 3px solid #fff; border-radius: 50%; margin: 0 auto; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: 900; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            background-size: cover; background-position: center;
+        }
+        .name-label { 
+            font-size: 10px; font-weight: bold; margin-top: 4px; 
+            background: rgba(0,0,0,0.8); padding: 2px 6px; 
+            border-radius: 4px; display: inline-block; white-space: nowrap;
+        }
 
-    /* Corner Arcs */
-    .corner { width: 15px; height: 15px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.5); }
-    .c-tl { top: -8px; left: -8px; }
-    .c-tr { top: -8px; right: -8px; }
-    .c-bl { bottom: -8px; left: -8px; }
-    .c-br { bottom: -8px; right: -8px; }
-</style>
+        /* --- BOTTOM NAVIGATION BAR --- */
+        #nav-bar {
+            background: #1a1a1a; display: flex; justify-content: space-around;
+            padding: 10px 0; border-top: 1px solid #333; padding-bottom: calc(10px + env(safe-area-inset-bottom));
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: #888; font-size: 10px; cursor: pointer; border: none; background: none;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 20px; margin-bottom: 4px; }
 
-<div id="stage">
+        /* --- MODALS --- */
+        #editModal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #222; padding: 20px; border-radius: 20px; border: 1px solid #444; 
+            z-index: 100; width: 85%; max-width: 350px; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 99; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #444; background: #333; color: white; box-sizing: border-box; }
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
+        button.primary { background: var(--accent); color: black; border: none; padding: 12px; border-radius: 8px; font-weight: bold; flex: 1; }
+        button.secondary { background: #444; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; flex: 1; }
+    </style>
+</head>
+<body>
+
+<div id="app-header">
+    <h1>SOCLINEUP JPTECH</h1>
+</div>
+
+<div id="pitch-container">
     <div id="pitch">
         <div class="line halfway"></div>
         <div class="line center-circle"></div>
-        <div class="line center-spot"></div>
-
         <div class="line penalty-box top-box"></div>
         <div class="line goal-area top-goal"></div>
-        <div class="line arc top-arc"></div>
-        <div class="line penalty-spot top-spot"></div>
-
         <div class="line penalty-box bottom-box"></div>
         <div class="line goal-area bottom-goal"></div>
-        <div class="line arc bottom-arc"></div>
-        <div class="line penalty-spot bottom-spot"></div>
+        
+        </div>
+</div>
 
-        <div class="line corner c-tl"></div>
-        <div class="line corner c-tr"></div>
-        <div class="line corner c-bl"></div>
-        <div class="line corner c-br"></div>
+<div id="nav-bar">
+    <button class="nav-item" onclick="downloadLineup()">
+        <span class="nav-icon">📸</span>
+        <span>SAVE</span>
+    </button>
+    <button class="nav-item" onclick="changeFormation()">
+        <span class="nav-icon">📋</span>
+        <span>FORMATION</span>
+    </button>
+    <button class="nav-item" onclick="resetPositions()">
+        <span class="nav-icon">🔄</span>
+        <span>RESET</span>
+    </button>
+</div>
+
+<div class="modal-overlay" id="overlay" onclick="closeModal()"></div>
+<div id="editModal">
+    <h3 style="margin-top:0">Player Details</h3>
+    <input type="text" id="editName" placeholder="Player Name">
+    <input type="number" id="editNum" placeholder="Number">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <label>Color:</label>
+        <input type="color" id="editColor" style="padding:0; height:40px;">
+    </div>
+    <div class="btn-row">
+        <button class="primary" onclick="saveChanges()">APPLY</button>
+        <button class="secondary" onclick="closeModal()">CLOSE</button>
     </div>
 </div>
+
+<script>
+    let currentPlayer = null;
+    
+    // Classic 4-4-2 Formation by default
+    const formations = {
+        "4-4-2": [
+            { y: 88, x: 44, role: 'GK', color: '#ffeb3b' },
+            { y: 72, x: 10 }, { y: 75, x: 33 }, { y: 75, x: 56 }, { y: 72, x: 79 },
+            { y: 48, x: 10 }, { y: 52, x: 33 }, { y: 52, x: 56 }, { y: 48, x: 79 },
+            { y: 20, x: 30 }, { y: 20, x: 58 }
+        ],
+        "4-3-3": [
+            { y: 88, x: 44, role: 'GK', color: '#ffeb3b' },
+            { y: 72, x: 10 }, { y: 75, x: 33 }, { y: 75, x: 56 }, { y: 72, x: 79 },
+            { y: 50, x: 20 }, { y: 55, x: 44 }, { y: 50, x: 68 },
+            { y: 20, x: 15 }, { y: 15, x: 44 }, { y: 20, x: 73 }
+        ]
+    };
+
+    function initPitch(formationKey = "4-4-2") {
+        const pitch = document.getElementById('pitch');
+        // Clear existing players
+        const existing = document.querySelectorAll('.player');
+        existing.forEach(p => p.remove());
+
+        const dataToUse = formations[formationKey];
+
+        dataToUse.forEach((p, i) => {
+            const playerDiv = document.createElement('div');
+            playerDiv.className = 'player';
+            playerDiv.style.top = p.y + '%';
+            playerDiv.style.left = p.x + '%';
+
+            playerDiv.innerHTML = `
+                <div class="jersey" style="background-color: ${p.color || '#d32f2f'}">${p.num || (i+1)}</div>
+                <div class="name-label">${p.name || 'PLAYER'}</div>
+            `;
+
+            playerDiv.addEventListener('click', (e) => {
+                // Prevent modal if we just finished dragging
+                if(!playerDiv.classList.contains('dragging')) openModal(playerDiv);
+            });
+            
+            makeDraggable(playerDiv);
+            pitch.appendChild(playerDiv);
+        });
+    }
+
+    function openModal(el) {
+        currentPlayer = el;
+        document.getElementById('editName').value = el.querySelector('.name-label').innerText;
+        document.getElementById('editNum').value = el.querySelector('.jersey').innerText;
+        document.getElementById('editModal').style.display = 'block';
+        document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+        document.getElementById('overlay').style.display = 'none';
+    }
+
+    function saveChanges() {
+        if(!currentPlayer) return;
+        currentPlayer.querySelector('.name-label').innerText = document.getElementById('editName').value.toUpperCase();
+        currentPlayer.querySelector('.jersey').innerText = document.getElementById('editNum').value;
+        currentPlayer.querySelector('.jersey').style.backgroundColor = document.getElementById('editColor').value;
+        closeModal();
+    }
+
+    function changeFormation() {
+        const keys = Object.keys(formations);
+        const current = prompt("Choose formation: 4-4-2 or 4-3-3", "4-4-2");
+        if(formations[current]) initPitch(current);
+    }
+
+    function makeDraggable(el) {
+        let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+        
+        const dragStart = (e) => {
+            el.classList.add('dragging');
+            const clientX = e.type === "touchstart" ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === "touchstart" ? e.touches[0].clientY : e.clientY;
+            initialX = clientX - xOffset;
+            initialY = clientY - yOffset;
+            if (e.target.closest('.player')) active = true;
+        };
+
+        const dragMove = (e) => {
+            if (active) {
+                e.preventDefault();
+                const clientX = e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+                const clientY = e.type === "touchmove" ? e.touches[0].clientY : e.clientY;
+                currentX = clientX - initialX;
+                currentY = clientY - initialY;
+                xOffset = currentX;
+                yOffset = currentY;
+                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        };
+
+        const dragEnd = () => {
+            active = false;
+            setTimeout(() => el.classList.remove('dragging'), 100);
+        };
+
+        el.addEventListener('touchstart', dragStart, {passive: false});
+        el.addEventListener('touchmove', dragMove, {passive: false});
+        el.addEventListener('touchend', dragEnd);
+        el.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', dragMove);
+        document.addEventListener('mouseup', dragEnd);
+    }
+
+    function downloadLineup() {
+        const pitch = document.getElementById('pitch');
+        html2canvas(pitch, { scale: 2 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'my-lineup.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+
+    function resetPositions() {
+        if(confirm("Reset all players?")) initPitch();
+    }
+
+    window.onload = () => initPitch();
+</script>
+</body>
+</html>
