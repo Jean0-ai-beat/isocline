@@ -2,110 +2,152 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOCLINEUP JPTECH</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SOCLINEUP PRO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        :root { --pitch-green: #2e7d32; --line-white: rgba(255, 255, 255, 0.7); }
-        body { font-family: sans-serif; margin: 0; background: #000; color: white; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        :root { 
+            --pitch-green: #1b5e20; 
+            --accent: #ff9800;
+            --glass: rgba(255, 255, 255, 0.1);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
 
-        /* --- NEW HEADER BRANDING --- */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; background: #0a0a0a; color: white; height: 100vh; 
+            display: flex; flex-direction: column; overflow: hidden; 
+        }
+
+        /* --- IMMERSIVE HEADER --- */
         #app-header {
-            background: #1a1a1a;
-            padding: 15px;
+            padding: 40px 20px 10px;
             text-align: center;
-            border-bottom: 2px solid #333;
+            background: linear-gradient(to bottom, #1a1a1a, transparent);
+            position: absolute; width: 100%; z-index: 20; pointer-events: none;
         }
-        #app-header h1 {
-            margin: 0;
-            font-size: 20px;
-            letter-spacing: 2px;
-            color: #ff9800; /* Matching the Save button color */
-            text-transform: uppercase;
+        #app-header h1 { margin: 0; font-size: 18px; letter-spacing: 3px; font-weight: 800; color: var(--accent); }
+
+        /* --- 3D PERSPECTIVE PITCH --- */
+        #stage {
+            flex: 1; perspective: 1000px; display: flex; align-items: center; justify-content: center;
+            background: radial-gradient(circle, #2e7d32 0%, #1b5e20 100%);
         }
 
-        /* --- THE PITCH --- */
         #pitch {
-            background-color: var(--pitch-green);
-            background-image: linear-gradient(rgba(255,255,255,0.05) 50%, transparent 50%);
-            background-size: 100% 10%;
-            width: 100%; height: 70vh; position: relative; border: 3px solid var(--line-white);
+            width: 90%; height: 80%; position: relative;
+            border: 2px solid rgba(255,255,255,0.5);
+            transform: rotateX(10deg); /* Slight tilt for 3D feel */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 10%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.03) 20%);
         }
-        .line { position: absolute; border: 2px solid var(--line-white); pointer-events: none; }
-        .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); }
-        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; }
-        .penalty-box { left: 20%; width: 60%; height: 15%; }
-        .top { top: -2px; border-top: none; }
-        .bottom { bottom: -2px; border-bottom: none; }
 
-        /* --- PLAYERS --- */
+        .line { position: absolute; border: 1.5px solid rgba(255,255,255,0.5); pointer-events: none; }
+        .halfway { top: 50%; width: 100%; border-bottom: 2px solid rgba(255,255,255,0.5); }
+        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; }
+        .penalty-box { left: 20%; width: 60%; height: 15%; border-top:none;}
+        .top { top: 0; border-top: none; }
+        .bottom { bottom: 0; border-bottom: none; }
+
+        /* --- PLAYER STYLING --- */
         .player {
-            position: absolute; width: 70px; text-align: center; touch-action: none; cursor: grab; z-index: 10;
+            position: absolute; width: 60px; text-align: center; touch-action: none; z-index: 10;
+            transition: transform 0.1s ease-out;
         }
         .jersey {
-            width: 50px; height: 50px; background-color: red; border: 2px solid white;
-            border-radius: 8px; margin: 0 auto; display: flex; align-items: center; 
-            justify-content: center; font-weight: bold; background-size: cover; background-position: center;
+            width: 45px; height: 45px; background: red; border-radius: 50%; /* Rounded for pro look */
+            margin: 0 auto; display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid white; background-size: cover;
         }
-        .name-label { font-size: 11px; font-weight: bold; margin-top: 4px; background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 10px; }
+        .name-label { 
+            font-size: 10px; font-weight: bold; margin-top: 5px; 
+            background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px;
+            text-transform: uppercase; white-space: nowrap;
+        }
 
-        /* --- MODAL --- */
+        /* --- ACTION BAR (BOTTOM) --- */
+        #tab-bar {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px calc(10px + var(--safe-bottom));
+            display: flex; justify-content: space-around;
+            border-top: 1px solid #333; z-index: 30;
+        }
+        .tab-btn {
+            background: none; border: none; color: #888; font-size: 10px;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .tab-btn.active { color: var(--accent); }
+        .tab-icon { width: 24px; height: 24px; background: #333; border-radius: 6px; }
+
+        /* --- MODAL (SLIDE UP) --- */
         #editModal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #222; padding: 20px; border-radius: 15px; border: 2px solid #444; z-index: 100; width: 80%;
+            display: none; position: fixed; bottom: 0; left: 0; right: 0;
+            background: #1c1c1e; padding: 25px; border-radius: 20px 20px 0 0;
+            z-index: 100; transition: transform 0.3s ease;
         }
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; box-sizing: border-box; }
-        .btn-row { display: flex; gap: 10px; }
-        button { flex: 1; padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-
-        #controls { padding: 15px; background: #111; display: flex; gap: 10px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        input { 
+            background: #2c2c2e; border: none; color: white; padding: 12px; 
+            border-radius: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box;
+        }
+        .save-btn { background: var(--accent); color: black; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div id="app-header">
-    <h1>SOCLINEUP JPTECH</h1>
-</div>
+<div id="app-header"><h1>SOCLINEUP PRO</h1></div>
 
-<div id="pitch">
-    <div class="line halfway"></div>
-    <div class="line center-circle"></div>
-    <div class="line penalty-box top"></div>
-    <div class="line penalty-box bottom"></div>
-</div>
-
-<div id="controls">
-    <button style="background: #ff9800;" onclick="downloadLineup()">📸 Save Image</button>
-    <button style="background: #444;" onclick="resetPositions()">📍 Reset Positions</button>
-</div>
-
-<div class="modal-overlay" id="overlay"></div>
-<div id="editModal">
-    <h3>Edit Player</h3>
-    <input type="text" id="editName" placeholder="Name">
-    <input type="number" id="editNum" placeholder="Number">
-    <label>Jersey Color:</label>
-    <input type="color" id="editColor" value="#ff0000">
-    <label>Upload Personal Jersey:</label>
-    <input type="file" id="editImg" accept="image/*">
-    <div class="btn-row">
-        <button style="background:#28a745" onclick="saveChanges()">Apply</button>
-        <button style="background:#d32f2f" onclick="closeModal()">Cancel</button>
+<div id="stage">
+    <div id="pitch">
+        <div class="line halfway"></div>
+        <div class="line center-circle"></div>
+        <div class="line penalty-box top"></div>
+        <div class="line penalty-box bottom"></div>
     </div>
+</div>
+
+<div id="tab-bar">
+    <button class="tab-btn" onclick="downloadLineup()">
+        <div class="tab-icon" style="background: var(--accent)"></div>
+        SAVE IMAGE
+    </button>
+    <button class="tab-btn" onclick="resetPositions()">
+        <div class="tab-icon"></div>
+        RESET
+    </button>
+</div>
+
+<div class="modal-overlay" id="overlay" onclick="closeModal()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:90;"></div>
+
+<div id="editModal">
+    <div class="modal-header">
+        <h2 style="margin:0; font-size:18px;">Player Settings</h2>
+        <span onclick="closeModal()" style="color:var(--accent); cursor:pointer;">Done</span>
+    </div>
+    <input type="text" id="editName" placeholder="Player Name">
+    <input type="number" id="editNum" placeholder="Number">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+        <label>Color</label>
+        <input type="color" id="editColor" style="padding:0; width:40px; height:40px;">
+        <label>Photo</label>
+        <input type="file" id="editImg" accept="image/*" style="font-size:10px;">
+    </div>
+    <button class="save-btn" onclick="saveChanges()">APPLY CHANGES</button>
 </div>
 
 <script>
     let currentPlayer = null;
     const defaultPositions = [
-        { y: 85, x: 42, role: 'GK', color: '#ffcc00' },
-        { y: 70, x: 10 }, { y: 70, x: 32 }, { y: 70, x: 53 }, { y: 70, x: 75 },
-        { y: 45, x: 20 }, { y: 45, x: 42 }, { y: 45, x: 65 },
-        { y: 20, x: 15 }, { y: 20, x: 42 }, { y: 20, x: 70 }
+        { y: 82, x: 42, role: 'GK', color: '#ffd700', name: 'Goalkeeper' },
+        { y: 65, x: 10 }, { y: 65, x: 32 }, { y: 65, x: 53 }, { y: 65, x: 75 },
+        { y: 40, x: 20 }, { y: 40, x: 42 }, { y: 40, x: 65 },
+        { y: 15, x: 15 }, { y: 15, x: 42 }, { y: 15, x: 70 }
     ];
 
     function initPitch() {
-        const savedData = JSON.parse(localStorage.getItem('soccerRoster'));
+        const savedData = JSON.parse(localStorage.getItem('soccerRosterV2'));
         const dataToUse = savedData || defaultPositions;
 
         dataToUse.forEach((p, i) => {
@@ -113,14 +155,17 @@
             playerDiv.className = 'player';
             playerDiv.style.top = p.y + '%';
             playerDiv.style.left = p.x + '%';
-            playerDiv.dataset.index = i;
-
+            
             playerDiv.innerHTML = `
-                <div class="jersey" style="background-color: ${p.color || 'red'}; background-image: url(${p.img || ''})">${p.num || (i+1)}</div>
+                <div class="jersey" style="background-color: ${p.color || '#d32f2f'}; background-image: url(${p.img || ''})">${p.num || (i+1)}</div>
                 <div class="name-label">${p.name || 'Player'}</div>
             `;
 
-            playerDiv.addEventListener('click', () => openModal(playerDiv));
+            playerDiv.addEventListener('click', (e) => {
+                // If it was a drag, don't open modal
+                if(playerDiv.dataset.dragging === "true") return;
+                openModal(playerDiv);
+            });
             makeDraggable(playerDiv);
             document.getElementById('pitch').appendChild(playerDiv);
         });
@@ -137,7 +182,6 @@
     function closeModal() {
         document.getElementById('editModal').style.display = 'none';
         document.getElementById('overlay').style.display = 'none';
-        document.getElementById('editImg').value = '';
     }
 
     function saveChanges() {
@@ -165,21 +209,31 @@
 
     function makeDraggable(el) {
         let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+        
         const dragStart = (e) => {
+            el.dataset.dragging = "false";
             initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
             initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
-            if (e.target.classList.contains('jersey') || e.target.classList.contains('name-label')) active = true;
+            if (e.target.closest('.player')) active = true;
         };
+
         const dragMove = (e) => {
             if (active) {
+                el.dataset.dragging = "true";
                 e.preventDefault();
                 currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
                 currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
                 xOffset = currentX; yOffset = currentY;
-                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.1)`;
             }
         };
-        const dragEnd = () => { active = false; saveToStorage(); };
+
+        const dragEnd = () => { 
+            active = false; 
+            el.style.transform = el.style.transform.replace('scale(1.1)', 'scale(1)');
+            saveToStorage(); 
+        };
+
         el.addEventListener('touchstart', dragStart);
         el.addEventListener('touchmove', dragMove);
         el.addEventListener('touchend', dragEnd);
@@ -199,20 +253,21 @@
                 x: p.style.left, y: p.style.top
             });
         });
-        localStorage.setItem('soccerRoster', JSON.stringify(data));
+        localStorage.setItem('soccerRosterV2', JSON.stringify(data));
     }
 
     function downloadLineup() {
-        html2canvas(document.getElementById('pitch')).then(canvas => {
+        const pitch = document.getElementById('pitch');
+        html2canvas(pitch, { backgroundColor: '#1b5e20' }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'lineup.png';
+            link.download = 'my-lineup.png';
             link.href = canvas.toDataURL();
             link.click();
         });
     }
 
     function resetPositions() {
-        localStorage.removeItem('soccerRoster');
+        localStorage.removeItem('soccerRosterV2');
         location.reload();
     }
 
