@@ -3,275 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>SOCLINEUP PRO</title>
+    <title>SOCLINEUP PRO | JPTECH</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
-            --pitch-green: #1b5e20; 
+            --pitch-green: #24732a; 
+            --line-white: rgba(255, 255, 255, 0.8);
             --accent: #ff9800;
-            --glass: rgba(255, 255, 255, 0.1);
-            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; background: #0a0a0a; color: white; height: 100vh; 
+            font-family: -apple-system, system-ui, sans-serif; 
+            margin: 0; background: #000; color: white; height: 100vh; 
             display: flex; flex-direction: column; overflow: hidden; 
         }
 
-        /* --- IMMERSIVE HEADER --- */
-        #app-header {
-            padding: 40px 20px 10px;
-            text-align: center;
-            background: linear-gradient(to bottom, #1a1a1a, transparent);
-            position: absolute; width: 100%; z-index: 20; pointer-events: none;
+        /* --- HEADER & FORMATION SELECTOR --- */
+        #top-bar {
+            background: #1a1a1a; padding: 15px; text-align: center; z-index: 20;
+            border-bottom: 1px solid #333;
         }
-        #app-header h1 { margin: 0; font-size: 18px; letter-spacing: 3px; font-weight: 800; color: var(--accent); }
-
-        /* --- 3D PERSPECTIVE PITCH --- */
-        #stage {
-            flex: 1; perspective: 1000px; display: flex; align-items: center; justify-content: center;
-            background: radial-gradient(circle, #2e7d32 0%, #1b5e20 100%);
+        select {
+            background: #333; color: white; border: 1px solid var(--accent);
+            padding: 8px 15px; border-radius: 20px; font-weight: bold; width: 60%;
         }
 
+        /* --- THE PRO PITCH --- */
+        #stage { flex: 1; display: flex; align-items: center; justify-content: center; background: #111; }
+        
         #pitch {
-            width: 90%; height: 80%; position: relative;
-            border: 2px solid rgba(255,255,255,0.5);
-            transform: rotateX(10deg); /* Slight tilt for 3D feel */
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 10%, rgba(255,255,255,0.03) 10%, rgba(255,255,255,0.03) 20%);
+            width: 95vw; height: 75vh; background-color: var(--pitch-green);
+            position: relative; border: 3px solid var(--line-white);
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 10%, rgba(0,0,0,0.05) 10%, rgba(0,0,0,0.05) 20%);
+            overflow: hidden;
         }
 
-        .line { position: absolute; border: 1.5px solid rgba(255,255,255,0.5); pointer-events: none; }
-        .halfway { top: 50%; width: 100%; border-bottom: 2px solid rgba(255,255,255,0.5); }
-        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; }
-        .penalty-box { left: 20%; width: 60%; height: 15%; border-top:none;}
-        .top { top: 0; border-top: none; }
-        .bottom { bottom: 0; border-bottom: none; }
+        .line { position: absolute; border: 2px solid var(--line-white); pointer-events: none; }
+        
+        /* Pitch Markings */
+        .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); }
+        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; }
+        .center-spot { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 4px; height: 4px; background: var(--line-white); border-radius: 50%; }
+        
+        /* Penalty Box (18yd) */
+        .penalty-box { left: 20%; width: 60%; height: 16%; }
+        .box-top { top: 0; border-top: none; }
+        .box-bottom { bottom: 0; border-bottom: none; }
 
-        /* --- PLAYER STYLING --- */
-        .player {
-            position: absolute; width: 60px; text-align: center; touch-action: none; z-index: 10;
-            transition: transform 0.1s ease-out;
-        }
+        /* Goal Area (6yd) */
+        .goal-area { left: 35%; width: 30%; height: 6%; }
+        .goal-top { top: 0; border-top: none; }
+        .goal-bottom { bottom: 0; border-bottom: none; }
+
+        /* Penalty Arc (The D) */
+        .arc { width: 60px; height: 30px; border-radius: 0 0 50px 50px; left: 50%; transform: translateX(-50%); }
+        .arc-top { top: 16%; border-top: none; }
+        .arc-bottom { bottom: 16%; border-radius: 50px 50px 0 0; border-bottom: none; }
+
+        /* Corners */
+        .corner { width: 15px; height: 15px; border-radius: 50%; }
+        .c-tl { top: -8px; left: -8px; } .c-tr { top: -8px; right: -8px; }
+        .c-bl { bottom: -8px; left: -8px; } .c-br { bottom: -8px; right: -8px; }
+
+        /* --- PLAYERS --- */
+        .player { position: absolute; width: 60px; text-align: center; touch-action: none; z-index: 10; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .jersey {
-            width: 45px; height: 45px; background: red; border-radius: 50%; /* Rounded for pro look */
-            margin: 0 auto; display: flex; align-items: center; justify-content: center;
-            font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            border: 2px solid white; background-size: cover;
+            width: 44px; height: 44px; background: #d32f2f; border: 2px solid #fff;
+            border-radius: 50%; margin: 0 auto; display: flex; align-items: center; 
+            justify-content: center; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            background-size: cover; background-position: center;
         }
-        .name-label { 
-            font-size: 10px; font-weight: bold; margin-top: 5px; 
-            background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 4px;
-            text-transform: uppercase; white-space: nowrap;
-        }
+        .name-label { font-size: 10px; font-weight: bold; margin-top: 4px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 5px; }
 
-        /* --- ACTION BAR (BOTTOM) --- */
-        #tab-bar {
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 10px 20px calc(10px + var(--safe-bottom));
-            display: flex; justify-content: space-around;
-            border-top: 1px solid #333; z-index: 30;
-        }
-        .tab-btn {
-            background: none; border: none; color: #888; font-size: 10px;
-            display: flex; flex-direction: column; align-items: center; gap: 4px;
-        }
-        .tab-btn.active { color: var(--accent); }
-        .tab-icon { width: 24px; height: 24px; background: #333; border-radius: 6px; }
-
-        /* --- MODAL (SLIDE UP) --- */
-        #editModal {
-            display: none; position: fixed; bottom: 0; left: 0; right: 0;
-            background: #1c1c1e; padding: 25px; border-radius: 20px 20px 0 0;
-            z-index: 100; transition: transform 0.3s ease;
-        }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
-        input { 
-            background: #2c2c2e; border: none; color: white; padding: 12px; 
-            border-radius: 10px; margin-bottom: 15px; width: 100%; box-sizing: border-box;
-        }
-        .save-btn { background: var(--accent); color: black; width: 100%; padding: 15px; border-radius: 12px; font-weight: bold; }
+        /* --- UI CONTROLS --- */
+        #controls { padding: 15px; background: #1a1a1a; display: flex; gap: 10px; border-top: 1px solid #333; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="app-header"><h1>SOCLINEUP PRO</h1></div>
+<div id="top-bar">
+    <select id="formationSelect" onchange="applyFormation()">
+        <option value="442">Formation: 4-4-2</option>
+        <option value="433">Formation: 4-3-3</option>
+        <option value="352">Formation: 3-5-2</option>
+        <option value="4231">Formation: 4-2-3-1</option>
+    </select>
+</div>
 
 <div id="stage">
     <div id="pitch">
         <div class="line halfway"></div>
         <div class="line center-circle"></div>
-        <div class="line penalty-box top"></div>
-        <div class="line penalty-box bottom"></div>
+        <div class="line center-spot"></div>
+        
+        <div class="line penalty-box box-top"></div>
+        <div class="line goal-area goal-top"></div>
+        <div class="line arc arc-top"></div>
+        
+        <div class="line penalty-box box-bottom"></div>
+        <div class="line goal-area goal-bottom"></div>
+        <div class="line arc arc-bottom"></div>
+
+        <div class="line corner c-tl"></div><div class="line corner c-tr"></div>
+        <div class="line corner c-bl"></div><div class="line corner c-br"></div>
     </div>
 </div>
 
-<div id="tab-bar">
-    <button class="tab-btn" onclick="downloadLineup()">
-        <div class="tab-icon" style="background: var(--accent)"></div>
-        SAVE IMAGE
-    </button>
-    <button class="tab-btn" onclick="resetPositions()">
-        <div class="tab-icon"></div>
-        RESET
-    </button>
-</div>
-
-<div class="modal-overlay" id="overlay" onclick="closeModal()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:90;"></div>
-
-<div id="editModal">
-    <div class="modal-header">
-        <h2 style="margin:0; font-size:18px;">Player Settings</h2>
-        <span onclick="closeModal()" style="color:var(--accent); cursor:pointer;">Done</span>
-    </div>
-    <input type="text" id="editName" placeholder="Player Name">
-    <input type="number" id="editNum" placeholder="Number">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-        <label>Color</label>
-        <input type="color" id="editColor" style="padding:0; width:40px; height:40px;">
-        <label>Photo</label>
-        <input type="file" id="editImg" accept="image/*" style="font-size:10px;">
-    </div>
-    <button class="save-btn" onclick="saveChanges()">APPLY CHANGES</button>
+<div id="controls">
+    <button style="background: var(--accent);" onclick="downloadLineup()">📸 SAVE LINEUP</button>
+    <button style="background: #444;" onclick="resetPitch()">🔄 RESET</button>
 </div>
 
 <script>
-    let currentPlayer = null;
-    const defaultPositions = [
-        { y: 82, x: 42, role: 'GK', color: '#ffd700', name: 'Goalkeeper' },
-        { y: 65, x: 10 }, { y: 65, x: 32 }, { y: 65, x: 53 }, { y: 65, x: 75 },
-        { y: 40, x: 20 }, { y: 40, x: 42 }, { y: 40, x: 65 },
-        { y: 15, x: 15 }, { y: 15, x: 42 }, { y: 15, x: 70 }
-    ];
+    const formations = {
+        "442": [
+            {y:88, x:42}, // GK
+            {y:72, x:10}, {y:75, x:32}, {y:75, x:53}, {y:72, x:75}, // DEF
+            {y:45, x:10}, {y:48, x:32}, {y:48, x:53}, {y:45, x:75}, // MID
+            {y:15, x:32}, {y:15, x:53} // ATT
+        ],
+        "433": [
+            {y:88, x:42},
+            {y:72, x:10}, {y:75, x:32}, {y:75, x:53}, {y:72, x:75},
+            {y:50, x:25}, {y:55, x:42}, {y:50, x:60},
+            {y:15, x:15}, {y:12, x:42}, {y:15, x:70}
+        ],
+        "352": [
+            {y:88, x:42},
+            {y:75, x:25}, {y:78, x:42}, {y:75, x:60},
+            {y:45, x:8}, {y:50, x:25}, {y:50, x:42}, {y:50, x:60}, {y:45, x:78},
+            {y:15, x:32}, {y:15, x:53}
+        ],
+        "4231": [
+            {y:88, x:42},
+            {y:72, x:10}, {y:75, x:32}, {y:75, x:53}, {y:72, x:75},
+            {y:55, x:32}, {y:55, x:53},
+            {y:35, x:15}, {y:32, x:42}, {y:35, x:70},
+            {y:12, x:42}
+        ]
+    };
 
-    function initPitch() {
-        const savedData = JSON.parse(localStorage.getItem('soccerRosterV2'));
-        const dataToUse = savedData || defaultPositions;
-
-        dataToUse.forEach((p, i) => {
-            const playerDiv = document.createElement('div');
-            playerDiv.className = 'player';
-            playerDiv.style.top = p.y + '%';
-            playerDiv.style.left = p.x + '%';
-            
-            playerDiv.innerHTML = `
-                <div class="jersey" style="background-color: ${p.color || '#d32f2f'}; background-image: url(${p.img || ''})">${p.num || (i+1)}</div>
-                <div class="name-label">${p.name || 'Player'}</div>
+    function initPlayers() {
+        const pitch = document.getElementById('pitch');
+        // Clear existing players
+        document.querySelectorAll('.player').forEach(p => p.remove());
+        
+        formations["442"].forEach((pos, i) => {
+            const p = document.createElement('div');
+            p.className = 'player';
+            p.id = 'p' + i;
+            p.style.top = pos.y + '%';
+            p.style.left = pos.x + '%';
+            p.innerHTML = `
+                <div class="jersey">${i+1}</div>
+                <div class="name-label">Player ${i+1}</div>
             `;
-
-            playerDiv.addEventListener('click', (e) => {
-                // If it was a drag, don't open modal
-                if(playerDiv.dataset.dragging === "true") return;
-                openModal(playerDiv);
-            });
-            makeDraggable(playerDiv);
-            document.getElementById('pitch').appendChild(playerDiv);
+            makeDraggable(p);
+            pitch.appendChild(p);
         });
     }
 
-    function openModal(el) {
-        currentPlayer = el;
-        document.getElementById('editName').value = el.querySelector('.name-label').innerText;
-        document.getElementById('editNum').value = el.querySelector('.jersey').innerText;
-        document.getElementById('editModal').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeModal() {
-        document.getElementById('editModal').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    function saveChanges() {
-        const name = document.getElementById('editName').value;
-        const num = document.getElementById('editNum').value;
-        const color = document.getElementById('editColor').value;
-        const file = document.getElementById('editImg').files[0];
-
-        currentPlayer.querySelector('.name-label').innerText = name;
-        currentPlayer.querySelector('.jersey').innerText = num;
-        currentPlayer.querySelector('.jersey').style.backgroundColor = color;
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                currentPlayer.querySelector('.jersey').style.backgroundImage = `url(${e.target.result})`;
-                saveToStorage();
-            };
-            reader.readAsDataURL(file);
-        } else {
-            saveToStorage();
-        }
-        closeModal();
+    function applyFormation() {
+        const f = document.getElementById('formationSelect').value;
+        const coords = formations[f];
+        coords.forEach((pos, i) => {
+            const p = document.getElementById('p' + i);
+            if(p) {
+                p.style.top = pos.y + '%';
+                p.style.left = pos.x + '%';
+            }
+        });
     }
 
     function makeDraggable(el) {
         let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-        
         const dragStart = (e) => {
-            el.dataset.dragging = "false";
             initialX = (e.type === "touchstart" ? e.touches[0].clientX : e.clientX) - xOffset;
             initialY = (e.type === "touchstart" ? e.touches[0].clientY : e.clientY) - yOffset;
             if (e.target.closest('.player')) active = true;
         };
-
         const dragMove = (e) => {
             if (active) {
-                el.dataset.dragging = "true";
                 e.preventDefault();
                 currentX = (e.type === "touchmove" ? e.touches[0].clientX : e.clientX) - initialX;
                 currentY = (e.type === "touchmove" ? e.touches[0].clientY : e.clientY) - initialY;
                 xOffset = currentX; yOffset = currentY;
-                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) scale(1.1)`;
+                el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
             }
         };
-
-        const dragEnd = () => { 
-            active = false; 
-            el.style.transform = el.style.transform.replace('scale(1.1)', 'scale(1)');
-            saveToStorage(); 
-        };
-
-        el.addEventListener('touchstart', dragStart);
-        el.addEventListener('touchmove', dragMove);
-        el.addEventListener('touchend', dragEnd);
-        el.addEventListener('mousedown', dragStart);
-        document.addEventListener('mousemove', dragMove);
-        document.addEventListener('mouseup', dragEnd);
-    }
-
-    function saveToStorage() {
-        const data = [];
-        document.querySelectorAll('.player').forEach(p => {
-            data.push({
-                name: p.querySelector('.name-label').innerText,
-                num: p.querySelector('.jersey').innerText,
-                color: p.querySelector('.jersey').style.backgroundColor,
-                img: p.querySelector('.jersey').style.backgroundImage.slice(5, -2).replace(/"/g, ""),
-                x: p.style.left, y: p.style.top
-            });
-        });
-        localStorage.setItem('soccerRosterV2', JSON.stringify(data));
+        const dragEnd = () => { active = false; };
+        el.addEventListener('touchstart', dragStart); el.addEventListener('touchmove', dragMove); el.addEventListener('touchend', dragEnd);
+        el.addEventListener('mousedown', dragStart); document.addEventListener('mousemove', dragMove); document.addEventListener('mouseup', dragEnd);
     }
 
     function downloadLineup() {
-        const pitch = document.getElementById('pitch');
-        html2canvas(pitch, { backgroundColor: '#1b5e20' }).then(canvas => {
+        html2canvas(document.getElementById('pitch')).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'my-lineup.png';
+            link.download = 'jptech-lineup.png';
             link.href = canvas.toDataURL();
             link.click();
         });
     }
 
-    function resetPositions() {
-        localStorage.removeItem('soccerRosterV2');
-        location.reload();
-    }
+    function resetPitch() { location.reload(); }
 
-    window.onload = initPitch;
+    window.onload = initPlayers;
 </script>
 </body>
 </html>
