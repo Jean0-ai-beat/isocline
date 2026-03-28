@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SOCLINEUP JPTECH 3D</title>
+    <title>SOCLINEUP JPTECH PRO 3D</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
@@ -16,7 +16,7 @@
         body { 
             font-family: 'Segoe UI', sans-serif; 
             margin: 0; 
-            background: #0a0a0a; 
+            background: #050505; 
             color: white; 
             height: 100vh; 
             display: flex; 
@@ -24,95 +24,117 @@
             overflow: hidden; 
         }
 
+        /* --- HEADER & LOGO --- */
         #app-header {
             background: #111;
             padding: 10px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border-bottom: 1px solid #333;
             z-index: 10;
         }
-        #app-header h1 { margin: 0; font-size: 16px; color: var(--accent); letter-spacing: 2px; }
+        #team-crest-box {
+            width: 40px; height: 40px; border: 1px dashed #555; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            background: #222; cursor: pointer;
+        }
+        #team-crest-box img { width: 100%; height: 100%; object-fit: contain; }
+        #app-header h1 { margin: 0; font-size: 14px; color: var(--accent); flex: 1; text-align: center; }
 
-        /* --- 3D PITCH SYSTEM --- */
+        /* --- 3D PITCH & STAGE --- */
         #stage {
             flex: 1;
-            perspective: 1000px; /* Essential for 3D */
+            perspective: 1200px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            overflow: hidden;
+            padding-bottom: 20px;
         }
 
         #pitch {
-            width: 90%;
-            height: 85%;
+            width: 95%;
+            height: 75%;
             background-color: var(--pitch-green);
-            /* Lineup 11 Style Striped Grass */
-            background-image: repeating-linear-gradient(
-                0deg,
-                var(--pitch-green),
-                var(--pitch-green) 10%,
-                var(--pitch-dark) 10%,
-                var(--pitch-dark) 20%
-            );
+            background-image: repeating-linear-gradient(0deg, var(--pitch-green), var(--pitch-green) 10%, var(--pitch-dark) 10%, var(--pitch-dark) 20%);
             position: relative; 
             border: 3px solid var(--line-white);
-            /* The 3D Tilt */
-            transform: rotateX(25deg) rotateZ(0deg);
+            transform: rotateX(20deg);
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
         /* Field Markings */
         .line { position: absolute; border: 1.5px solid var(--line-white); pointer-events: none; }
         .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); }
-        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; border-radius: 50%; }
-        .penalty-box { left: 15%; width: 70%; height: 18%; border-top: none; }
+        .center-circle { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border-radius: 50%; }
+        .penalty-box { left: 15%; width: 70%; height: 16%; border-top: none; }
         .penalty-box.top { top: 0; }
         .penalty-box.bottom { bottom: 0; border-bottom: none; }
-        .penalty-arc { left: 35%; width: 30%; height: 8%; border-radius: 50%; border: 1.5px solid var(--line-white); }
-        .penalty-arc.top { top: 12%; border-top: none; }
-        .penalty-arc.bottom { bottom: 12%; border-bottom: none; }
 
-        /* --- 3D PLAYERS --- */
-        .player {
-            position: absolute; width: 60px; text-align: center; touch-action: none; cursor: grab; z-index: 20;
+        /* --- BENCH AREA --- */
+        #bench {
+            width: 100%;
+            height: 80px;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            border-top: 1px solid #333;
+            overflow-x: auto;
+            padding: 5px;
         }
+        .bench-player { transform: scale(0.8); position: relative; cursor: pointer; }
+
+        /* --- PLAYER PINS --- */
+        .player { position: absolute; width: 60px; text-align: center; touch-action: none; cursor: grab; z-index: 20; }
         .jersey {
-            width: 40px; height: 40px; background-color: #d32f2f; border: 2px solid white;
+            width: 44px; height: 44px; background-color: #d32f2f; border: 2px solid white;
             border-radius: 50%; margin: 0 auto; display: flex; align-items: center; 
-            justify-content: center; font-weight: bold; font-size: 14px;
-            box-shadow: 0 6px 0px #8b0000, 0 10px 15px rgba(0,0,0,0.5); /* 3D Shadow Effect */
-            background-size: cover;
+            justify-content: center; font-weight: bold; font-size: 15px;
+            box-shadow: 0 5px 0px #8b0000;
+            background-size: cover; overflow: hidden;
         }
+        
+        /* Jersey Styles */
+        .jersey.striped { background-image: linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.2) 50%); background-size: 15px 100%; }
+        .jersey.hooped { background-image: linear-gradient(0deg, transparent 50%, rgba(0,0,0,0.2) 50%); background-size: 100% 15px; }
+
         .name-label { 
-            font-size: 10px; font-weight: bold; margin-top: 8px; 
-            background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 12px;
-            text-transform: uppercase; border: 1px solid rgba(255,255,255,0.3);
+            font-size: 9px; font-weight: bold; margin-top: 8px; 
+            background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px;
+            text-transform: uppercase;
         }
 
-        /* --- MOBILE NAV --- */
-        #controls { 
-            padding: 15px; background: #111; display: flex; gap: 10px; border-top: 1px solid #333;
+        /* --- CONTROLS --- */
+        #controls { padding: 10px; background: #111; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        button, select { 
+            padding: 10px; border: none; border-radius: 5px; font-weight: bold; 
+            cursor: pointer; color: white; background: #333; font-size: 11px;
         }
-        button { 
-            flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: bold; 
-            cursor: pointer; color: white; background: #333; font-size: 12px;
-        }
+        .save-btn { background: var(--accent); color: black; grid-column: span 3; }
 
         /* --- MODAL --- */
         #editModal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #444; z-index: 100; width: 80%;
+            background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #444; z-index: 100; width: 85%;
         }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 99; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #333; background: #222; color: white; }
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border-radius: 5px; background: #222; color: white; border: 1px solid #444; }
     </style>
 </head>
 <body>
 
 <div id="app-header">
+    <div id="team-crest-box" onclick="document.getElementById('crestInput').click()">
+        <span id="crestText" style="font-size:8px">LOGO</span>
+        <img id="crestImg" src="" style="display:none">
+    </div>
+    <input type="file" id="crestInput" hidden accept="image/*" onchange="uploadCrest(this)">
     <h1>SOCLINEUP JPTECH</h1>
+    <button onclick="resetPositions()" style="padding:5px 10px; font-size:10px">RESET</button>
 </div>
 
 <div id="stage">
@@ -120,58 +142,101 @@
         <div class="line halfway"></div>
         <div class="line center-circle"></div>
         <div class="line penalty-box top"></div>
-        <div class="line penalty-arc top"></div>
         <div class="line penalty-box bottom"></div>
-        <div class="line penalty-arc bottom"></div>
-        </div>
+    </div>
+</div>
+
+<div id="bench">
+    <div class="bench-player" onclick="alert('Drag players from pitch to bench (or vice-versa) to swap!')">
+        <div class="jersey" style="background:#555; border-color:#888; box-shadow:none;">S</div>
+        <div class="name-label">BENCH</div>
+    </div>
 </div>
 
 <div id="controls">
-    <button style="background: var(--accent); color: black;" onclick="downloadLineup()">SAVE LINEUP</button>
-    <button onclick="resetPositions()">RESET</button>
+    <select id="formationSelect" onchange="applyFormation(this.value)">
+        <option value="">FORMATION</option>
+        <option value="442">4-4-2</option>
+        <option value="433">4-3-3</option>
+        <option value="352">3-5-2</option>
+    </select>
+    <select id="styleSelect" onchange="applyGlobalStyle(this.value)">
+        <option value="solid">SOLID JERSEY</option>
+        <option value="striped">STRIPED</option>
+        <option value="hooped">HOOPED</option>
+    </select>
+    <button onclick="alert('Tap a player to edit details!')">EDIT INFO</button>
+    <button class="save-btn" onclick="downloadLineup()">SAVE TO GALLERY 📸</button>
 </div>
 
 <div class="modal-overlay" id="overlay"></div>
 <div id="editModal">
     <h3>Edit Player</h3>
-    <input type="text" id="editName" placeholder="Player Name">
+    <input type="text" id="editName" placeholder="Name">
     <input type="number" id="editNum" placeholder="Number">
     <input type="color" id="editColor" value="#d32f2f">
-    <input type="file" id="editImg" accept="image/*">
-    <div style="display:flex; gap:10px; margin-top:10px;">
-        <button style="background:#28a745" onclick="saveChanges()">APPLY</button>
-        <button style="background:#444" onclick="closeModal()">CLOSE</button>
+    <div class="btn-row" style="display:flex; gap:10px; margin-top:10px;">
+        <button style="background:#28a745; flex:1" onclick="saveChanges()">APPLY</button>
+        <button style="background:#444; flex:1" onclick="closeModal()">CLOSE</button>
     </div>
 </div>
 
 <script>
     let currentPlayer = null;
-    const defaultPositions = [
-        { y: 85, x: 42, color: '#ffd600', name: 'GK', num: 1 },
+    const defaultPos = [
+        { y: 85, x: 42, name: 'GK', num: 1, color: '#ffd600' },
         { y: 70, x: 10 }, { y: 72, x: 32 }, { y: 72, x: 53 }, { y: 70, x: 75 },
         { y: 45, x: 20 }, { y: 45, x: 42 }, { y: 45, x: 65 },
         { y: 20, x: 15 }, { y: 15, x: 42 }, { y: 20, x: 70 }
     ];
 
-    function initPitch() {
-        const savedData = JSON.parse(localStorage.getItem('soccerRoster3D'));
-        const dataToUse = savedData || defaultPositions;
-
-        dataToUse.forEach((p, i) => {
-            const playerDiv = document.createElement('div');
-            playerDiv.className = 'player';
-            playerDiv.style.top = p.y + '%';
-            playerDiv.style.left = p.x + '%';
-
-            playerDiv.innerHTML = `
-                <div class="jersey" style="background-color: ${p.color || '#d32f2f'}; background-image: url(${p.img || ''})">${p.num || (i+1)}</div>
-                <div class="name-label">${p.name || 'PLAYER'}</div>
-            `;
-
-            playerDiv.addEventListener('click', () => openModal(playerDiv));
-            makeDraggable(playerDiv);
-            document.getElementById('pitch').appendChild(playerDiv);
+    function init() {
+        const pitch = document.getElementById('pitch');
+        defaultPos.forEach((p, i) => {
+            const div = document.createElement('div');
+            div.className = 'player';
+            div.style.top = p.y + '%';
+            div.style.left = p.x + '%';
+            div.innerHTML = `<div class="jersey" style="background-color:${p.color || '#d32f2f'}">${p.num || i+1}</div><div class="name-label">${p.name || 'PLAYER'}</div>`;
+            div.onclick = () => openModal(div);
+            makeDraggable(div);
+            pitch.appendChild(div);
         });
+    }
+
+    function applyFormation(val) {
+        const players = document.querySelectorAll('#pitch .player');
+        let coords = [];
+        if(val === '442') coords = [{y:88,x:43}, {y:70,x:10}, {y:72,x:32}, {y:72,x:53}, {y:70,x:75}, {y:45,x:10}, {y:45,x:35}, {y:45,x:52}, {y:45,x:78}, {y:18,x:33}, {y:18,x:54}];
+        if(val === '433') coords = [{y:88,x:43}, {y:70,x:10}, {y:72,x:32}, {y:72,x:53}, {y:70,x:75}, {y:48,x:22}, {y:50,x:43}, {y:48,x:64}, {y:18,x:15}, {y:12,x:43}, {y:18,x:72}];
+        if(val === '352') coords = [{y:88,x:43}, {y:72,x:22}, {y:75,x:43}, {y:72,x:64}, {y:45,x:10}, {y:48,x:28}, {y:50,x:43}, {y:48,x:58}, {y:45,x:78}, {y:18,x:33}, {y:18,x:54}];
+        
+        coords.forEach((c, i) => {
+            if(players[i]) {
+                players[i].style.top = c.y + '%';
+                players[i].style.left = c.x + '%';
+                players[i].style.transform = 'translate3d(0,0,0)';
+            }
+        });
+    }
+
+    function applyGlobalStyle(style) {
+        document.querySelectorAll('.jersey').forEach(j => {
+            j.classList.remove('striped', 'hooped');
+            if(style !== 'solid') j.classList.add(style);
+        });
+    }
+
+    function uploadCrest(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('crestImg').src = e.target.result;
+                document.getElementById('crestImg').style.display = 'block';
+                document.getElementById('crestText').style.display = 'none';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
     function openModal(el) {
@@ -188,47 +253,29 @@
     }
 
     function saveChanges() {
-        const name = document.getElementById('editName').value;
-        const num = document.getElementById('editNum').value;
-        const color = document.getElementById('editColor').value;
-        const file = document.getElementById('editImg').files[0];
-
-        currentPlayer.querySelector('.name-label').innerText = name;
-        currentPlayer.querySelector('.jersey').innerText = num;
-        currentPlayer.querySelector('.jersey').style.backgroundColor = color;
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                currentPlayer.querySelector('.jersey').style.backgroundImage = `url(${e.target.result})`;
-                saveToStorage();
-            };
-            reader.readAsDataURL(file);
-        } else {
-            saveToStorage();
-        }
+        currentPlayer.querySelector('.name-label').innerText = document.getElementById('editName').value;
+        currentPlayer.querySelector('.jersey').innerText = document.getElementById('editNum').value;
+        currentPlayer.querySelector('.jersey').style.backgroundColor = document.getElementById('editColor').value;
         closeModal();
     }
 
     function makeDraggable(el) {
         let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
         const dragStart = (e) => {
-            const touch = e.type === "touchstart" ? e.touches[0] : e;
-            initialX = touch.clientX - xOffset;
-            initialY = touch.clientY - yOffset;
+            const t = e.type === "touchstart" ? e.touches[0] : e;
+            initialX = t.clientX - xOffset; initialY = t.clientY - yOffset;
             if (e.target.closest('.player')) active = true;
         };
         const dragMove = (e) => {
             if (active) {
                 e.preventDefault();
-                const touch = e.type === "touchmove" ? e.touches[0] : e;
-                currentX = touch.clientX - initialX;
-                currentY = touch.clientY - initialY;
+                const t = e.type === "touchmove" ? e.touches[0] : e;
+                currentX = t.clientX - initialX; currentY = t.clientY - initialY;
                 xOffset = currentX; yOffset = currentY;
                 el.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
             }
         };
-        const dragEnd = () => { active = false; saveToStorage(); };
+        const dragEnd = () => { active = false; };
         el.addEventListener('touchstart', dragStart, {passive: false});
         el.addEventListener('touchmove', dragMove, {passive: false});
         el.addEventListener('touchend', dragEnd);
@@ -237,37 +284,18 @@
         document.addEventListener('mouseup', dragEnd);
     }
 
-    function saveToStorage() {
-        const data = [];
-        document.querySelectorAll('.player').forEach(p => {
-            data.push({
-                name: p.querySelector('.name-label').innerText,
-                num: p.querySelector('.jersey').innerText,
-                color: p.querySelector('.jersey').style.backgroundColor,
-                img: p.querySelector('.jersey').style.backgroundImage.slice(5, -2).replace(/"/g, ""),
-                x: p.style.left, y: p.style.top
-            });
-        });
-        localStorage.setItem('soccerRoster3D', JSON.stringify(data));
-    }
-
     function downloadLineup() {
-        // Temporarily remove 3D tilt for a clean screenshot if preferred, 
-        // but most users like the tilt in the photo.
-        html2canvas(document.getElementById('stage'), { backgroundColor: '#000' }).then(canvas => {
+        html2canvas(document.getElementById('stage')).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'my-lineup.png';
+            link.download = 'jptech-pro-lineup.png';
             link.href = canvas.toDataURL();
             link.click();
         });
     }
 
-    function resetPositions() {
-        localStorage.removeItem('soccerRoster3D');
-        location.reload();
-    }
+    function resetPositions() { location.reload(); }
 
-    window.onload = initPitch;
+    window.onload = init;
 </script>
 </body>
 </html>
