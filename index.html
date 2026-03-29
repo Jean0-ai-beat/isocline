@@ -1,27 +1,28 @@
-
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GRENADIERS LINEUP PRO</title>
+    <title>GRENADIERS LINEUP PRO - HAITI EDITION</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
-            --haiti-blue: #00209F; 
+            --haiti-blue: #00209F;
             --haiti-red: #D21034;
             --pitch-green: #2e7d32; 
-            --accent: #FFD700; /* Gold accents for winners */
+            --pitch-dark: #1b5e20;
+            --line-white: rgba(255, 255, 255, 0.9); 
+            --accent: #FFD700; /* Gold for champions */
         }
         
         body { 
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
             margin: 0; background: #050505; color: white; 
             height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
             touch-action: none; overscroll-behavior: none;
         }
 
-        /* --- HAITIAN PRO HEADER --- */
+        /* --- HAITIAN THEME HEADER --- */
         #app-header {
             background: linear-gradient(90deg, var(--haiti-blue) 50%, var(--haiti-red) 50%);
             padding: 12px 15px; display: flex; align-items: center;
@@ -34,32 +35,53 @@
             background: white; cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
         #team-crest-box img { width: 85%; height: 85%; object-fit: contain; }
-        #app-header h1 { 
-            margin: 0; font-size: 16px; color: white; flex: 1; text-align: center; 
-            text-transform: uppercase; font-weight: 900; letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
+        #app-header h1 { margin: 0; font-size: 16px; color: white; flex: 1; text-align: center; text-transform: uppercase; font-weight: 900; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
 
         /* --- 3D ARENA --- */
         #stage {
-            flex: 1; perspective: 1200px; display: flex; align-items: center; justify-content: center;
+            flex: 1; perspective: 1400px; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
-            overflow: hidden; padding-bottom: 20px;
+            overflow: hidden; position: relative;
         }
+
+        #pitch-container {
+            position: relative; transform: rotateX(28deg); transform-style: preserve-3d;
+            width: 90%; height: 55vh;
+        }
+
+        /* --- SPONSOR BANDEROL (LED BOARDS) --- */
+        .banderol {
+            position: absolute; background: #111; border: 2px solid #444;
+            display: flex; align-items: center; overflow: hidden; white-space: nowrap;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+        }
+        .banderol-content {
+            display: inline-block; animation: scroll-ads 20s linear infinite;
+            color: var(--accent); font-weight: bold; font-size: 14px; text-transform: uppercase;
+        }
+        .banderol-content span { margin: 0 40px; }
+
+        @keyframes scroll-ads {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        /* Positions for Banderols */
+        .b-top { top: -25px; left: 0; width: 100%; height: 25px; transform: rotateX(-90deg); transform-origin: bottom; }
+        .b-left { top: 0; left: -25px; width: 55vh; height: 25px; transform: rotateZ(90deg) rotateX(-90deg); transform-origin: top left; }
+        .b-right { top: 0; right: -25px; width: 55vh; height: 25px; transform: rotateZ(-90deg) rotateX(-90deg); transform-origin: top right; }
 
         #pitch {
-            width: 92%; height: 52vh;
+            width: 100%; height: 100%;
             background-color: var(--pitch-green);
-            background-image: repeating-linear-gradient(0deg, #388e3c, #388e3c 10%, #2e7d32 10%, #2e7d32 20%);
-            position: relative; border: 3px solid rgba(255,255,255,0.9);
-            transform: rotateX(20deg); transform-style: preserve-3d;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.9);
+            background-image: repeating-linear-gradient(0deg, var(--pitch-green), var(--pitch-green) 10%, var(--pitch-dark) 10%, var(--pitch-dark) 20%);
+            position: relative; border: 4px solid var(--line-white);
         }
 
-        .line { position: absolute; border: 1.5px solid rgba(255,255,255,0.8); pointer-events: none; }
-        .halfway { top: 50%; width: 100%; border-bottom: 2px solid white; transform: translateY(-50%); }
-        .center-circle { top: 50%; left: 50%; width: 90px; height: 90px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); }
-        .penalty-box { left: 15%; width: 70%; height: 18%; border: 2px solid white; }
+        .line { position: absolute; border: 2px solid var(--line-white); pointer-events: none; }
+        .halfway { top: 50%; width: 100%; border-bottom: 3px solid var(--line-white); transform: translateY(-50%); }
+        .center-circle { top: 50%; left: 50%; width: 100px; height: 100px; border-radius: 50%; transform: translate(-50%, -50%); }
+        .penalty-box { left: 15%; width: 70%; height: 18%; border: 3px solid var(--line-white); }
         .penalty-box.top { top: 0; border-top: none; }
         .penalty-box.bottom { bottom: 0; border-bottom: none; }
 
@@ -67,134 +89,127 @@
         .player { 
             position: absolute; width: 65px; text-align: center; 
             z-index: 500; cursor: grab;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), top 0.4s ease, left 0.4s ease;
-            will-change: transform; touch-action: none;
+            transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1), top 0.4s ease, left 0.4s ease;
+            will-change: transform, top, left; touch-action: none;
         }
 
         .player.is-dragging {
             transition: none; transform: scale(1.3) !important;
-            z-index: 2000; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.7));
+            z-index: 1000; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.8));
         }
 
         .jersey {
-            width: 50px; height: 50px; background-color: var(--haiti-blue); border: 3px solid white;
+            width: 48px; height: 48px; background-color: var(--haiti-blue); border: 3px solid white;
             border-radius: 50%; margin: 0 auto; display: flex; align-items: center; 
             justify-content: center; font-weight: 900; font-size: 18px; color: white;
             background-size: cover; background-position: center; position: relative;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4); pointer-events: none;
         }
+
+        .player.is-dragging .jersey { border-color: var(--accent); box-shadow: 0 0 20px var(--accent); }
 
         .name-label { 
-            font-size: 11px; font-weight: 800; margin-top: 6px; 
-            background: rgba(0,0,0,0.8); color: white; padding: 2px 8px; 
-            border-radius: 10px; white-space: nowrap; border: 1px solid rgba(255,255,255,0.2);
+            font-size: 11px; font-weight: bold; margin-top: 6px; 
+            background: rgba(0,0,0,0.85); color: white; padding: 3px 8px; 
+            border-radius: 4px; white-space: nowrap; pointer-events: none;
+            border-bottom: 2px solid var(--haiti-red);
         }
 
-        /* --- SMART DOCK (CONTROLS) --- */
-        #dock {
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 15px; border-top: 1px solid #333;
-            display: flex; flex-direction: column; gap: 10px;
-        }
-        
+        /* --- BENCH & CONTROLS --- */
+        #bench-area { background: #111; padding: 10px 0; border-top: 2px solid #333; }
         #bench { 
-            height: 80px; display: flex; align-items: center; gap: 15px;
-            overflow-x: auto; padding: 0 10px; background: rgba(0,0,0,0.3);
-            border-radius: 15px; border: 1px solid #444;
+            width: 92%; height: 90px; margin: 0 auto; border: 2px dashed #444; border-radius: 15px;
+            display: flex; align-items: center; gap: 15px; overflow-x: auto; padding: 0 15px;
+            background: rgba(0,0,0,0.4);
         }
 
-        .btn-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        
-        button, select { 
-            padding: 12px 5px; border: none; border-radius: 10px; 
-            font-weight: bold; color: white; background: #333; 
-            font-size: 10px; text-transform: uppercase; cursor: pointer;
-        }
-
-        .btn-haiti { background: var(--haiti-blue); border-bottom: 3px solid #00156b; }
-        .btn-action { background: var(--haiti-red); border-bottom: 3px solid #9b0b26; }
-        .export-btn { 
-            grid-column: span 4; background: var(--accent); color: black; 
-            font-size: 14px; margin-top: 5px; padding: 15px;
-        }
+        #controls { padding: 15px; background: #000; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button, select { padding: 14px; border: none; border-radius: 10px; font-weight: 800; color: white; background: #222; font-size: 12px; cursor: pointer; text-transform: uppercase; }
+        .add-player-btn { background: var(--haiti-blue); border: 1px solid white; }
+        .main-btn { background: var(--haiti-red); color: white; grid-column: span 2; font-size: 14px; letter-spacing: 1px; }
 
         /* --- MODAL --- */
-        #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 3000; backdrop-filter: blur(8px); }
+        #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; backdrop-filter: blur(8px); }
         #edit-modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1a1a1a; padding: 25px; border-radius: 25px; width: 85%; z-index: 3001; 
-            border: 2px solid var(--haiti-blue);
+            background: #1a1a1a; padding: 30px; border-radius: 25px; width: 85%; z-index: 2001; border: 2px solid var(--haiti-blue);
         }
-        input, select { width: 100%; padding: 14px; background: #252525; border: 1px solid #444; color: white; border-radius: 12px; margin-bottom: 15px; }
+        .field { margin-bottom: 15px; }
+        .field label { display: block; font-size: 10px; color: #aaa; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 14px; background: #000; border: 1px solid #333; color: white; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div id="app-header">
     <div id="team-crest-box" onclick="document.getElementById('crestIn').click()">
-        <img id="crestPrev" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Coat_of_arms_of_Haiti.svg/1200px-Coat_of_arms_of_Haiti.svg.png">
+        <img id="crestPrev" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Coat_of_arms_of_Haiti.svg/1200px-Coat_of_arms_of_Haiti.svg.png">
     </div>
     <input type="file" id="crestIn" hidden accept="image/*" onchange="loadCrest(this)">
-    <h1>GRENADIERS HAÏTI</h1>
-    <button class="btn-haiti" onclick="saveData()" style="padding: 8px 15px;">SAVE</button>
+    <h1>HAITI GRENADIERS</h1>
+    <button style="background:none; border:1px solid white; border-radius:5px; padding:5px 10px;" onclick="saveData()">SAVE</button>
 </div>
 
 <div id="stage">
-    <div id="pitch">
-        <div class="line halfway"></div>
-        <div class="line center-circle"></div>
-        <div class="line penalty-box top"></div>
-        <div class="line penalty-box bottom"></div>
+    <div id="pitch-container">
+        <div class="banderol b-top"><div class="banderol-content"><span>HAITI LIBERTÉ</span><span>DIGICEL</span><span>NATCOM</span><span>GRENADIER ALASO!</span><span>BRANA</span></div></div>
+        <div class="banderol b-left"><div class="banderol-content"><span>FEDERATION HAITIENNE DE FOOTBALL</span><span>AYITI CHERI</span></div></div>
+        <div class="banderol b-right"><div class="banderol-content"><span>L'UNION FAIT LA FORCE</span><span>VISIT HAITI</span></div></div>
+        
+        <div id="pitch">
+            <div class="line halfway"></div>
+            <div class="line center-circle"></div>
+            <div class="line penalty-box top"></div>
+            <div class="line penalty-box bottom"></div>
+        </div>
     </div>
 </div>
 
-<div id="dock">
+<div id="bench-area">
     <div id="bench"></div>
-    <div class="btn-group">
-        <button class="btn-haiti" onclick="addNewBenchPlayer()">+ JOUEUR</button>
-        <select onchange="changeFormation(this.value)">
-            <option value="442">4-4-2</option>
-            <option value="433">4-3-3</option>
-            <option value="352">3-5-2</option>
-        </select>
-        <button onclick="loadData()">LOAD</button>
-        <button class="btn-action" onclick="location.reload()">CLEAR</button>
-        <button class="export-btn" onclick="exportImage()">📸 EXPORTER L'ALBUM PHOTO</button>
-    </div>
+</div>
+
+<div id="controls">
+    <button class="add-player-btn" onclick="addNewBenchPlayer()">➕ ADD SUB</button>
+    <select onchange="changeFormation(this.value)">
+        <option value="">FORMATIONS</option>
+        <option value="442">4-4-2</option>
+        <option value="433">4-3-3</option>
+        <option value="352">3-5-2</option>
+    </select>
+    <button class="main-btn" onclick="exportImage()">📸 EXPORT HD LINEUP IMAGE</button>
 </div>
 
 <div id="modal-overlay" onclick="closeModal()"></div>
 <div id="edit-modal">
-    <h3 style="margin:0 0 20px 0; color:var(--haiti-blue); text-align:center;">MODIFIER JOUEUR</h3>
-    <input type="text" id="pName" placeholder="Nom du joueur">
-    <input type="number" id="pNum" placeholder="Numéro">
-    <div style="display:flex; gap:10px;">
-        <input type="color" id="pColor" value="#00209F" style="height:50px; width:80px;">
-        <select id="pPattern">
-            <option value="">Uni</option>
-            <option value="striped">Rayé</option>
-            <option value="hooped">Cerclé</option>
-        </select>
+    <h2 style="margin-top:0; color:var(--haiti-red)">MODIFIER JOUEUR</h2>
+    <div class="field"><label>NON JOUEUR</label><input type="text" id="pName"></div>
+    <div class="field"><label>NIMEWO</label><input type="number" id="pNum"></div>
+    <div class="field">
+        <label>COULEUR JERSEY</label>
+        <div style="display:flex; gap:10px;">
+            <input type="color" id="pColor" style="height:50px;">
+            <select id="pPattern">
+                <option value="">Solid</option>
+                <option value="striped">Striped</option>
+                <option value="hooped">Hooped</option>
+            </select>
+        </div>
     </div>
-    <input type="file" id="pImg" accept="image/*">
-    <div style="display:flex; gap:10px;">
-        <button class="btn-haiti" style="flex:2; padding:15px" onclick="applyPlayerChanges()">APPLIQUER</button>
-        <button style="background:#444; flex:1" onclick="closeModal()">RETOUR</button>
-    </div>
+    <div class="field"><label>CHWAZI FOTO</label><input type="file" id="pImg" accept="image/*"></div>
+    <button style="background:var(--haiti-blue); width:100%; padding:15px; margin-top:10px;" onclick="applyPlayerChanges()">SOVE CHANCHMAN</button>
 </div>
 
 <script>
     let activePlayer = null;
     let isDragging = false;
     let startX, startY;
-    let lastTap = 0;
 
     const initialPlayers = [
-        {y:88, x:43, n:'GK', num:1, c:'#ffd600'},
-        {y:72, x:10}, {y:75, x:32}, {y:75, x:53}, {y:72, x:75},
-        {y:48, x:22}, {y:50, x:43}, {y:48, x:64},
-        {y:20, x:15}, {y:12, x:43}, {y:20, x:72}
+        {y:88, x:43, n:'JOHNY PLACIDE', num:1, c:'#ffd600'},
+        {y:72, x:10, n:'ARCUS', num:2}, {y:75, x:32, n:'ADÉ', num:4}, {y:75, x:53, n:'PIERRE', num:6}, {y:72, x:75, n:'ALEXIS', num:3},
+        {y:48, x:22, n:'SABA', num:8}, {y:50, x:43, n:'ALCEUS', num:10}, {y:48, x:64, n:'METUSALA', num:5},
+        {y:20, x:15, n:'PIERROT', num:9}, {y:12, x:43, n:'NAZON', num:20}, {y:20, x:72, n:'DEPRÈS', num:11}
     ];
 
     function createPlayer(data, parent) {
@@ -217,23 +232,13 @@
         `;
         
         p.addEventListener('pointerdown', handlePointerDown);
-        // Pure App Feature: Double tap to remove
-        p.addEventListener('click', function(e) {
-            let now = new Date().getTime();
-            if (now - lastTap < 300) {
-                if(confirm("Supprimer ce joueur?")) p.remove();
-            }
-            lastTap = now;
-        });
-        
         parent.appendChild(p);
     }
 
     function handlePointerDown(e) {
         activePlayer = e.currentTarget;
         isDragging = false;
-        startX = e.clientX;
-        startY = e.clientY;
+        startX = e.clientX; startY = e.clientY;
         window.addEventListener('pointermove', handlePointerMove);
         window.addEventListener('pointerup', handlePointerUp);
         activePlayer.setPointerCapture(e.pointerId);
@@ -271,15 +276,13 @@
                 pitch.appendChild(activePlayer);
                 activePlayer.style.position = 'absolute';
                 const pRect = pitch.getBoundingClientRect();
-                activePlayer.style.left = Math.max(0, Math.min(92, ((e.clientX - pRect.left - 30) / pRect.width) * 100)) + '%';
-                activePlayer.style.top = Math.max(0, Math.min(92, ((e.clientY - pRect.top - 30) / pRect.height) * 100)) + '%';
+                activePlayer.style.left = ((e.clientX - pRect.left - 32) / pRect.width * 100) + '%';
+                activePlayer.style.top = ((e.clientY - pRect.top - 32) / pRect.height * 100) + '%';
                 activePlayer.style.transform = 'none';
             }
         }
         activePlayer = null;
     }
-
-    function addNewBenchPlayer() { createPlayer({n: 'NOUVEAU', num: 12}, document.getElementById('bench')); }
 
     function openModal(el) {
         activePlayer = el;
@@ -308,31 +311,47 @@
         closeModal();
     }
 
+    function addNewBenchPlayer() {
+        createPlayer({n: 'NOUVO', num: 12, c: '#D21034'}, document.getElementById('bench'));
+    }
+
     function changeFormation(val) {
-        const ps = document.querySelectorAll('.player');
+        const ps = document.querySelectorAll('#pitch .player');
         const pitch = document.getElementById('pitch');
         let c = [];
         if(val==='442') c=[{y:88,x:43},{y:72,x:10},{y:75,x:32},{y:75,x:53},{y:72,x:75},{y:50,x:10},{y:52,x:35},{y:52,x:52},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
         if(val==='433') c=[{y:88,x:43},{y:72,x:10},{y:75,x:32},{y:75,x:53},{y:72,x:75},{y:52,x:22},{y:55,x:43},{y:52,x:64},{y:22,x:15},{y:15,x:43},{y:22,x:72}];
         if(val==='352') c=[{y:88,x:43},{y:75,x:22},{y:78,x:43},{y:75,x:64},{y:50,x:10},{y:52,x:28},{y:55,x:43},{y:52,x:58},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
+        
         c.forEach((pos, i) => {
             if(ps[i]) {
-                pitch.appendChild(ps[i]);
-                ps[i].style.position = 'absolute';
                 ps[i].style.top = pos.y + '%';
                 ps[i].style.left = pos.x + '%';
-                ps[i].style.transform = 'none';
             }
         });
     }
 
+    function loadCrest(input) {
+        if (input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = (e) => document.getElementById('crestPrev').src = e.target.result;
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
     function exportImage() {
-        html2canvas(document.getElementById('stage')).then(canvas => {
+        html2canvas(document.getElementById('stage'), {scale: 3}).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'haiti-lineup.png';
+            link.download = 'Haiti_Lineup.png';
             link.href = canvas.toDataURL();
             link.click();
         });
     }
 
-    window.
+    window.onload = () => {
+        const pitch = document.getElementById('pitch');
+        initialPlayers.forEach(p => createPlayer(p, pitch));
+    };
+</script>
+</body>
+</html>
