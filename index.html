@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GRENADIERS PRO ELITE</title>
+    <title>GRENADIERS PRO - HAITI EDITION</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root { 
-            --haiti-blue: #00209F;
-            --haiti-red: #D21034;
-            --pitch-green: #2e7d32; 
-            --pitch-dark: #1b5e20;
-            --line-white: rgba(255, 255, 255, 0.9); 
-            --accent: #FFD700;
+            --haiti-blue: #00209F; --haiti-red: #D21034;
+            --pitch-green: #2e7d32; --pitch-dark: #1b5e20;
+            --line-white: rgba(255, 255, 255, 0.9); --accent: #FFD700;
         }
         
         body { 
-            font-family: 'Inter', 'Segoe UI', sans-serif; 
-            margin: 0; background: #050505; color: white; 
+            font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; background: #000; color: white; 
             height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
             touch-action: none; overscroll-behavior: none;
         }
@@ -25,45 +21,44 @@
         /* --- HEADER --- */
         #app-header {
             background: linear-gradient(90deg, var(--haiti-blue) 50%, var(--haiti-red) 50%);
-            padding: 12px 15px; display: flex; align-items: center;
-            justify-content: space-between; border-bottom: 3px solid var(--accent); z-index: 1000;
+            padding: 10px 15px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 3px solid var(--accent); z-index: 1001;
         }
         #team-crest-box {
-            width: 50px; height: 50px; border: 2px solid white; border-radius: 50%;
+            width: 45px; height: 45px; border: 2px solid white; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; overflow: hidden;
             background: white; cursor: pointer;
         }
-        #team-crest-box img { width: 85%; height: 85%; object-fit: contain; }
-        #app-header h1 { margin: 0; font-size: 14px; color: white; flex: 1; text-align: center; text-transform: uppercase; font-weight: 900; letter-spacing: 1px; }
+        #team-crest-box img { width: 80%; height: 80%; object-fit: contain; }
+        #app-header h1 { margin: 0; font-size: 15px; font-weight: 900; letter-spacing: 1px; text-shadow: 1px 1px 3px #000; }
 
         /* --- 3D ARENA --- */
         #stage {
-            flex: 1; perspective: 1400px; display: flex; align-items: center; justify-content: center;
+            flex: 1; perspective: 1200px; display: flex; align-items: center; justify-content: center;
             background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
             overflow: hidden; position: relative;
         }
 
         #pitch-container {
             position: relative; transform: rotateX(25deg); transform-style: preserve-3d;
-            width: 90%; height: 52vh; transition: transform 0.5s ease;
+            width: 92%; height: 50vh;
         }
 
-        /* LED BANDEROLS */
+        /* SPONSOR BANDEROLS (LED BOARDS) */
         .banderol {
-            position: absolute; background: #111; border: 1px solid #444;
-            display: flex; align-items: center; overflow: hidden; white-space: nowrap;
+            position: absolute; background: #111; border: 1.5px solid #444;
+            display: flex; align-items: center; overflow: hidden; white-space: nowrap; z-index: 10;
         }
         .banderol-content {
-            display: inline-block; animation: scroll-ads 15s linear infinite;
-            color: var(--accent); font-weight: bold; font-size: 12px;
+            display: inline-block; animation: scroll-ads 12s linear infinite;
+            color: var(--accent); font-weight: bold; font-size: 11px; text-transform: uppercase;
         }
-        .banderol-content span { margin: 0 30px; }
-
+        .banderol-content span { margin: 0 25px; }
         @keyframes scroll-ads { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
-        .b-top { top: -22px; left: 0; width: 100%; height: 22px; transform: rotateX(-90deg); transform-origin: bottom; }
-        .b-left { top: 0; left: -22px; width: 52vh; height: 22px; transform: rotateZ(90deg) rotateX(-90deg); transform-origin: top left; }
-        .b-right { top: 0; right: -22px; width: 52vh; height: 22px; transform: rotateZ(-90deg) rotateX(-90deg); transform-origin: top right; }
+        .b-top { top: -20px; left: 0; width: 100%; height: 20px; transform: rotateX(-90deg); transform-origin: bottom; }
+        .b-left { top: 0; left: -20px; width: 50vh; height: 20px; transform: rotateZ(90deg) rotateX(-90deg); transform-origin: top left; }
+        .b-right { top: 0; right: -20px; width: 50vh; height: 20px; transform: rotateZ(-90deg) rotateX(-90deg); transform-origin: top right; }
 
         #pitch {
             width: 100%; height: 100%; background-color: var(--pitch-green);
@@ -73,47 +68,40 @@
 
         .line { position: absolute; border: 1.5px solid var(--line-white); pointer-events: none; }
         .halfway { top: 50%; width: 100%; border-bottom: 2px solid var(--line-white); transform: translateY(-50%); }
-        .center-circle { top: 50%; left: 50%; width: 90px; height: 90px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid var(--line-white); }
+        .center-circle { top: 50%; left: 50%; width: 80px; height: 80px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid var(--line-white); }
         .p-box { left: 15%; width: 70%; height: 18%; border: 2px solid var(--line-white); }
         .p-box.top { top: 0; border-top: none; }
         .p-box.bottom { bottom: 0; border-bottom: none; }
 
         /* --- PLAYER --- */
         .player { 
-            position: absolute; width: 65px; text-align: center; 
-            z-index: 500; cursor: grab; transition: transform 0.2s cubic-bezier(0.2, 0, 0.2, 1), top 0.4s ease, left 0.4s ease;
+            position: absolute; width: 60px; text-align: center; 
+            z-index: 500; cursor: grab; transition: transform 0.2s cubic-bezier(0.1, 0.7, 0.1, 1), top 0.4s ease, left 0.4s ease;
             touch-action: none;
         }
-        .player.is-dragging { transition: none; transform: scale(1.3) !important; z-index: 1000; }
+        .player.is-dragging { transition: none; transform: scale(1.3) !important; z-index: 1100 !important; }
         .jersey {
-            width: 46px; height: 46px; background-color: var(--haiti-blue); border: 2px solid white;
+            width: 44px; height: 44px; background-color: var(--haiti-blue); border: 2.5px solid white;
             border-radius: 50%; margin: 0 auto; display: flex; align-items: center; 
             justify-content: center; font-weight: 900; font-size: 16px; color: white;
-            background-size: cover; background-position: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            background-size: cover; background-position: center; box-shadow: 0 4px 8px rgba(0,0,0,0.5);
         }
         .name-label { 
-            font-size: 10px; font-weight: bold; margin-top: 4px; background: rgba(0,0,0,0.8); 
-            padding: 2px 6px; border-radius: 3px; white-space: nowrap; border-bottom: 2px solid var(--haiti-red);
+            font-size: 9px; font-weight: bold; margin-top: 4px; background: rgba(0,0,0,0.85); 
+            padding: 2px 5px; border-radius: 3px; white-space: nowrap; border-bottom: 2px solid var(--haiti-red);
         }
 
-        /* --- FOOTER & BENCH --- */
-        #footer { background: #000; border-top: 1px solid #333; }
+        /* --- FOOTER --- */
+        #footer { background: #000; border-top: 1px solid #222; z-index: 1001; }
         #bench { 
-            width: 94%; height: 85px; margin: 10px auto; border: 1px dashed #444; border-radius: 12px;
-            display: flex; align-items: center; gap: 12px; overflow-x: auto; padding: 0 10px;
+            width: 94%; height: 80px; margin: 8px auto; border: 1px dashed #444; border-radius: 12px;
+            display: flex; align-items: center; gap: 10px; overflow-x: auto; padding: 0 10px;
         }
         #controls { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        button, select { padding: 12px; border: none; border-radius: 8px; font-weight: bold; color: white; background: #222; font-size: 11px; }
-        .btn-blue { background: var(--haiti-blue); }
+        button, select { padding: 12px; border: none; border-radius: 8px; font-weight: 800; color: white; background: #222; font-size: 11px; text-transform: uppercase; }
+        .btn-blue { background: var(--haiti-blue); border: 1px solid rgba(255,255,255,0.3); }
         .btn-red { background: var(--haiti-red); }
-        .main-btn { grid-column: span 2; background: var(--accent); color: black; font-size: 13px; }
-
-        /* --- MODAL --- */
-        #modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 2000; }
-        #edit-modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #1a1a1a; padding: 25px; border-radius: 20px; width: 80%; z-index: 2001;
-        }
+        .main-btn { grid-column: span 2; background: var(--accent); color: #000; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -124,12 +112,12 @@
     </div>
     <input type="file" id="crestIn" hidden onchange="loadCrest(this)">
     <h1>HAITI GRENADIERS</h1>
-    <button onclick="saveData()" style="background:transparent; border:1px solid white;">SAVE</button>
+    <button onclick="saveData()" style="background:transparent; border:1px solid white; border-radius:4px; font-size:10px; padding:4px 8px;">SAVE</button>
 </div>
 
 <div id="stage">
     <div id="pitch-container">
-        <div class="banderol b-top"><div class="banderol-content"><span>GRENADIER ALASO!</span><span>AYITI CHERI</span><span>DIGICEL</span><span>NATCOM</span></div></div>
+        <div class="banderol b-top"><div class="banderol-content"><span>GRENADIER ALASO!</span><span>AYITI CHERI</span><span>DIGICEL</span><span>NATCOM</span><span>HFF PRO</span></div></div>
         <div class="banderol b-left"><div class="banderol-content"><span>L'UNION FAIT LA FORCE</span></div></div>
         <div class="banderol b-right"><div class="banderol-content"><span>LIBERTÉ OU LA MORT</span></div></div>
         <div id="pitch">
@@ -144,27 +132,27 @@
 <div id="footer">
     <div id="bench"></div>
     <div id="controls">
-        <button class="btn-blue" onclick="addNewBenchPlayer()">➕ ADD PLAYER</button>
+        <button class="btn-blue" onclick="addNewBenchPlayer()">➕ ADD SUB</button>
         <select onchange="changeFormation(this.value)">
-            <option value="">FORMATION</option>
+            <option value="">FORMATIONS</option>
             <option value="442">4-4-2</option>
             <option value="433">4-3-3</option>
             <option value="352">3-5-2</option>
         </select>
-        <button onclick="loadData()">LOAD LAST</button>
+        <button onclick="loadData()">LOAD DATA</button>
         <button class="btn-red" onclick="location.reload()">RESET</button>
-        <button class="main-btn" onclick="exportImage()">📸 EXPORT LINEUP IMAGE</button>
+        <button class="main-btn" onclick="exportImage()">📸 EXPORT HD LINEUP</button>
     </div>
 </div>
 
-<div id="modal-overlay" onclick="closeModal()"></div>
-<div id="edit-modal">
-    <h3 style="color:var(--accent)">EDIT PLAYER</h3>
-    <input type="text" id="pName" placeholder="Name" style="margin-bottom:10px; width:100%; padding:10px; background:#000; border:1px solid #333; color:white;">
-    <input type="number" id="pNum" placeholder="Number" style="margin-bottom:10px; width:100%; padding:10px; background:#000; border:1px solid #333; color:white;">
-    <input type="color" id="pColor" style="width:100%; height:40px; margin-bottom:10px;">
-    <input type="file" id="pImg" accept="image/*" style="margin-bottom:20px; font-size:10px;">
-    <button style="background:var(--haiti-blue); width:100%; padding:15px; color:white; border:none; border-radius:10px;" onclick="applyPlayerChanges()">APPLY</button>
+<div id="modal-overlay" onclick="closeModal()" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:2000;"></div>
+<div id="edit-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#1a1a1a; padding:25px; border-radius:20px; width:80%; z-index:2001; border:1px solid var(--haiti-blue);">
+    <h3 style="color:var(--accent); margin-top:0;">EDIT JOUEUR</h3>
+    <input type="text" id="pName" placeholder="Non Joueur" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white; border-radius:8px;">
+    <input type="number" id="pNum" placeholder="Nimewo" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:white; border-radius:8px;">
+    <input type="color" id="pColor" style="width:100%; height:45px; margin-bottom:10px; border:none; background:none;">
+    <input type="file" id="pImg" accept="image/*" style="font-size:11px; margin-bottom:15px;">
+    <button style="background:var(--haiti-blue); width:100%; padding:15px; color:white; font-weight:bold; border:none; border-radius:10px;" onclick="applyPlayerChanges()">SOVE CHANCHMAN</button>
 </div>
 
 <script>
@@ -185,7 +173,7 @@
         } else {
             p.style.position = 'static'; p.style.transform = 'scale(0.85)';
         }
-        p.innerHTML = `<div class="jersey" style="background-color:${data.c || '#00209F'}"><span class="num-txt">${data.num || '?'}</span></div><div class="name-label">${data.n || 'PLAYER'}</div>`;
+        p.innerHTML = `<div class="jersey" style="background-color:${data.c || '#00209F'}"><span class="num-txt">${data.num || '?'}</span></div><div class="name-label">${data.n || 'JOUEUR'}</div>`;
         p.addEventListener('pointerdown', e => {
             activePlayer = p; isDragging = false; startX = e.clientX; startY = e.clientY;
             p.setPointerCapture(e.pointerId);
@@ -198,7 +186,7 @@
     function move(e) {
         if (!activePlayer) return;
         const dx = e.clientX - startX, dy = e.clientY - startY;
-        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
             isDragging = true; activePlayer.classList.add('is-dragging');
             activePlayer.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(1.3)`;
         }
@@ -215,8 +203,8 @@
             } else {
                 pitch.appendChild(activePlayer); activePlayer.style.position = 'absolute';
                 const r = pitch.getBoundingClientRect();
-                activePlayer.style.left = ((e.clientX - r.left - 32) / r.width * 100) + '%';
-                activePlayer.style.top = ((e.clientY - r.top - 32) / r.height * 100) + '%';
+                activePlayer.style.left = ((e.clientX - r.left - 30) / r.width * 100) + '%';
+                activePlayer.style.top = ((e.clientY - r.top - 30) / r.height * 100) + '%';
                 activePlayer.style.transform = 'none';
             }
         }
@@ -250,13 +238,14 @@
 
     function changeFormation(val) {
         const ps = document.querySelectorAll('.player');
+        const pitch = document.getElementById('pitch');
         let c = [];
         if(val==='442') c=[{y:88,x:43},{y:72,x:8},{y:75,x:32},{y:75,x:53},{y:72,x:78},{y:50,x:10},{y:52,x:35},{y:52,x:52},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
         if(val==='433') c=[{y:88,x:43},{y:72,x:8},{y:75,x:32},{y:75,x:53},{y:72,x:78},{y:52,x:22},{y:55,x:43},{y:52,x:64},{y:22,x:15},{y:15,x:43},{y:22,x:72}];
         if(val==='352') c=[{y:88,x:43},{y:75,x:22},{y:78,x:43},{y:75,x:64},{y:50,x:10},{y:52,x:28},{y:55,x:43},{y:52,x:58},{y:50,x:78},{y:22,x:33},{y:22,x:54}];
         c.forEach((pos, i) => { 
             if(ps[i]) { 
-                document.getElementById('pitch').appendChild(ps[i]);
+                pitch.appendChild(ps[i]);
                 ps[i].style.position = 'absolute'; ps[i].style.top = pos.y + '%'; ps[i].style.left = pos.x + '%'; ps[i].style.transform = 'none'; 
             } 
         });
@@ -266,19 +255,23 @@
 
     function loadCrest(i) { if (i.files[0]) { const r = new FileReader(); r.onload = (e) => document.getElementById('crestPrev').src = e.target.result; r.readAsDataURL(i.files[0]); } }
 
-    function exportImage() { html2canvas(document.getElementById('stage'), {scale: 2}).then(c => { const l = document.createElement('a'); l.download = 'lineup.png'; l.href = c.toDataURL(); l.click(); }); }
+    function exportImage() { 
+        html2canvas(document.getElementById('stage'), {scale: 2, useCORS: true, backgroundColor: '#000'}).then(c => { 
+            const l = document.createElement('a'); l.download = 'Grenadiers_Lineup.png'; l.href = c.toDataURL(); l.click(); 
+        }); 
+    }
 
     function saveData() {
         const data = [];
         document.querySelectorAll('.player').forEach(p => {
             data.push({ n: p.querySelector('.name-label').innerText, num: p.querySelector('.num-txt').innerText, c: p.querySelector('.jersey').style.backgroundColor, x: p.style.left, y: p.style.top, onBench: p.parentElement.id === 'bench' });
         });
-        localStorage.setItem('haiti_save', JSON.stringify(data));
-        alert("Sove!");
+        localStorage.setItem('haiti_pro_save', JSON.stringify(data));
+        alert("Sove avèk siksè!");
     }
 
     function loadData() {
-        const s = localStorage.getItem('haiti_save'); if(!s) return;
+        const s = localStorage.getItem('haiti_pro_save'); if(!s) return;
         document.getElementById('pitch').innerHTML = '<div class="line halfway"></div><div class="line center-circle"></div><div class="line p-box top"></div><div class="line p-box bottom"></div>';
         document.getElementById('bench').innerHTML = '';
         JSON.parse(s).forEach(d => createPlayer(d, d.onBench ? document.getElementById('bench') : document.getElementById('pitch')));
